@@ -18,6 +18,9 @@ usersRouter.get('/api/users', async (request, response) => {
 usersRouter.post('/api/users', async (request, response) => {
   const { username, name, password } = request.body;
 
+  if (!password || password.length < 7) {
+    return response.status(400).json({ error: 'Password must be at least 7 chars long.' });
+  }
   const saltRounds = 10;
 
   const passwordHash = await bcrypt.hash(password, saltRounds);
@@ -28,9 +31,12 @@ usersRouter.post('/api/users', async (request, response) => {
     passwordHash,
   });
 
-  const savedUser = await user.save();
-
-  response.status(201).json(savedUser);
+  try {
+    const savedUser = await user.save();
+    response.status(201).json(savedUser);
+  } catch (error) {
+    return response.status(400).json({ error: error.name, message: error.message });
+  }
 });
 
 module.exports = usersRouter;
