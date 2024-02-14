@@ -1,14 +1,15 @@
-const blogRouter = require("express").Router();
-const Blog = require("../models/blog");
-const mongoose = require("mongoose");
-const ObjectId = mongoose.Types.ObjectId;
+const mongoose = require('mongoose');
 
-blogRouter.get("/api/blogs", async (request, response) => {
+const blogRouter = require('express').Router();
+
+const Blog = require('../models/blog');
+
+blogRouter.get('/api/blogs', async (request, response) => {
   const blogPosts = await Blog.find({});
   response.json(blogPosts);
 });
 
-blogRouter.post("/api/blogs", async (request, response) => {
+blogRouter.post('/api/blogs', async (request, response) => {
   const blog = new Blog(request.body);
 
   if (!blog.title || !blog.url) return response.status(400).end();
@@ -17,18 +18,19 @@ blogRouter.post("/api/blogs", async (request, response) => {
 
   const result = await blog.save();
 
-  response.status(201).json(result);
+  return response.status(201).json(result);
 });
 
-blogRouter.delete("/api/blogs/:id", async (request, response) => {
+blogRouter.delete('/api/blogs/:id', async (request, response) => {
   const isValidObjectId = mongoose.Types.ObjectId.isValid(request.params.id);
 
   let objectId;
 
   if (isValidObjectId) {
-    objectId = new ObjectId(request.params.id);
+    objectId = new mongoose.Types.ObjectId(request.params.id);
   } else {
-    console.error("Invalid ObjectId format");
+    // eslint-disable-next-line no-console
+    console.error('Invalid ObjectId format');
     return response.status(400).end();
   }
 
@@ -36,19 +38,22 @@ blogRouter.delete("/api/blogs/:id", async (request, response) => {
     const deletedDocument = await Blog.findByIdAndDelete(objectId);
 
     if (deletedDocument) {
-      console.log("Document deleted successfully:", deletedDocument);
+      // eslint-disable-next-line no-console
+      console.log('Document deleted successfully:', deletedDocument);
     } else {
-      console.log("Document not found");
+      // eslint-disable-next-line no-console
+      console.log('Document not found');
     }
   } catch (error) {
-    console.error("Error deleting document:", error);
+    // eslint-disable-next-line no-console
+    console.error('Error deleting document:', error);
   }
 
-  response.status(204).end();
+  return response.status(204).end();
 });
 
-blogRouter.put("/api/blogs/:id", async (request, response, next) => {
-  const body = request.body;
+blogRouter.put('/api/blogs/:id', async (request, response) => {
+  const { body } = request.body;
 
   const blogPost = {
     title: body.title,
@@ -61,11 +66,12 @@ blogRouter.put("/api/blogs/:id", async (request, response, next) => {
     const updatedBlogpost = await Blog.findByIdAndUpdate(
       request.params.id,
       blogPost,
-      { new: true }
+      { new: true },
     );
     response.json(updatedBlogpost);
   } catch (error) {
-    response.json(error);
+    response.status(400).json(error);
+    // eslint-disable-next-line no-console
     console.log(error);
   }
 });

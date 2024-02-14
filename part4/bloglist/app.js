@@ -1,20 +1,24 @@
-const express = require('express')
-const app = express()
-const cors = require('cors')
-const mongoose = require('mongoose')
-const config = require('./utils/config')
+const express = require('express');
 
-const mongoUrl = config.MONGODB_URI
+const app = express();
 
-console.log("mongoUrl->", mongoUrl);
+const cors = require('cors');
+
+const mongoose = require('mongoose');
+
+const config = require('./utils/config');
+
+const mongoUrl = config.MONGODB_URI;
 
 const blogRouter = require('./controllers/blog');
+const usersRouter = require('./controllers/users');
 
-mongoose.connect(mongoUrl)
+mongoose.connect(mongoUrl);
 
-app.use(cors())
-app.use(express.json())
+app.use(cors());
+app.use(express.json());
 
-app.use(blogRouter)
+app.use(blogRouter);
+app.use(usersRouter);
 
-module.exports = app
+module.exports = app;
