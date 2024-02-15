@@ -4,21 +4,36 @@ const blogRouter = require('express').Router();
 
 const Blog = require('../models/blog');
 
+const User = require('../models/user');
+
 blogRouter.get('/api/blogs', async (request, response) => {
   const blogPosts = await Blog.find({});
   response.json(blogPosts);
 });
 
 blogRouter.post('/api/blogs', async (request, response) => {
-  const blog = new Blog(request.body);
+  const user = await User.findById(request.body.userId);
+
+  console.log('user->', user);
+
+  const newBlogPost = request.body;
+
+  // should not this be user._id?
+  newBlogPost.user = user.id;
+
+  const blog = new Blog(newBlogPost);
 
   if (!blog.title || !blog.url) return response.status(400).end();
 
   if (!blog.likes) blog.likes = 0;
 
-  const result = await blog.save();
+  const savedBlogpost = await blog.save();
 
-  return response.status(201).json(result);
+  user.blogposts = user.blogposts.concat(savedBlogpost._id);
+
+  await user.save();
+
+  return response.status(201).json(savedBlogpost);
 });
 
 blogRouter.delete('/api/blogs/:id', async (request, response) => {

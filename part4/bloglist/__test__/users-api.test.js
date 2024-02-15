@@ -7,6 +7,7 @@ const api = supertest(app);
 
 // const User = require('../models/user');
 
+// TODO: clear the db and fill it before starting the tests
 describe('Invalid user creation', () => {
   test('Invalid password', async () => {
     const newUser = {
