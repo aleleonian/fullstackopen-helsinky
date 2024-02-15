@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 const mongoose = require('mongoose');
 const supertest = require('supertest');
 const app = require('../app');
@@ -5,7 +6,7 @@ const app = require('../app');
 const api = supertest(app);
 const helper = require('../utils/blog-api_helper');
 
-const Blogpost = require('../models/blog');
+const Blogpost = require('../models/blogpost');
 
 let initialLength;
 

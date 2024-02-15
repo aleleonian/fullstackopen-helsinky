@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const blogRouter = require('express').Router();
 
-const Blogpost = require('../models/blog');
+const Blogpost = require('../models/blogpost');
 
 const User = require('../models/user');
 
