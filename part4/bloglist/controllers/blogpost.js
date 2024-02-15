@@ -2,6 +2,9 @@ const mongoose = require('mongoose');
 
 const blogRouter = require('express').Router();
 
+// eslint-disable-next-line import/no-extraneous-dependencies
+const jwt = require('jsonwebtoken');
+
 const Blogpost = require('../models/blogpost');
 
 const User = require('../models/user');
@@ -12,9 +15,19 @@ blogRouter.get('/api/blogposts', async (request, response) => {
 });
 
 blogRouter.post('/api/blogposts', async (request, response) => {
-  const user = await User.findById(request.body.userId);
+  console.log('request.token->', request.token);
 
-  console.log('user->', user);
+  let decodedToken;
+  try {
+    decodedToken = jwt.verify(request.token, process.env.SECRET);
+    if (!decodedToken.id) {
+      return response.status(401).json({ error: 'token invalid' });
+    }
+  } catch (error) {
+    return response.status(401).json({ error: 'token invalid' });
+  }
+
+  const user = await User.findById(decodedToken.id);
 
   const newBlogPost = request.body;
 
@@ -31,9 +44,13 @@ blogRouter.post('/api/blogposts', async (request, response) => {
 
   user.blogposts = user.blogposts.concat(savedBlogpost._id);
 
-  await user.save();
+  try {
+    await user.save();
 
-  return response.status(201).json(savedBlogpost);
+    return response.status(201).json(savedBlogpost);
+  } catch (error) {
+    return response.status(401).json({ error });
+  }
 });
 
 blogRouter.delete('/api/blogposts/:id', async (request, response) => {
