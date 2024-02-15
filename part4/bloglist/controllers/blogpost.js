@@ -2,16 +2,16 @@ const mongoose = require('mongoose');
 
 const blogRouter = require('express').Router();
 
-const Blog = require('../models/blog');
+const Blogpost = require('../models/blog');
 
 const User = require('../models/user');
 
-blogRouter.get('/api/blogs', async (request, response) => {
-  const blogPosts = await Blog.find({});
+blogRouter.get('/api/blogposts', async (request, response) => {
+  const blogPosts = await Blogpost.find({}).populate('user');
   response.json(blogPosts);
 });
 
-blogRouter.post('/api/blogs', async (request, response) => {
+blogRouter.post('/api/blogposts', async (request, response) => {
   const user = await User.findById(request.body.userId);
 
   console.log('user->', user);
@@ -21,7 +21,7 @@ blogRouter.post('/api/blogs', async (request, response) => {
   // should not this be user._id?
   newBlogPost.user = user.id;
 
-  const blog = new Blog(newBlogPost);
+  const blog = new Blogpost(newBlogPost);
 
   if (!blog.title || !blog.url) return response.status(400).end();
 
@@ -36,7 +36,7 @@ blogRouter.post('/api/blogs', async (request, response) => {
   return response.status(201).json(savedBlogpost);
 });
 
-blogRouter.delete('/api/blogs/:id', async (request, response) => {
+blogRouter.delete('/api/blogposts/:id', async (request, response) => {
   const isValidObjectId = mongoose.Types.ObjectId.isValid(request.params.id);
 
   let objectId;
@@ -50,7 +50,7 @@ blogRouter.delete('/api/blogs/:id', async (request, response) => {
   }
 
   try {
-    const deletedDocument = await Blog.findByIdAndDelete(objectId);
+    const deletedDocument = await Blogpost.findByIdAndDelete(objectId);
 
     if (deletedDocument) {
       // eslint-disable-next-line no-console
@@ -67,7 +67,7 @@ blogRouter.delete('/api/blogs/:id', async (request, response) => {
   return response.status(204).end();
 });
 
-blogRouter.put('/api/blogs/:id', async (request, response) => {
+blogRouter.put('/api/blogposts/:id', async (request, response) => {
   const { body } = request.body;
 
   const blogPost = {
@@ -78,7 +78,7 @@ blogRouter.put('/api/blogs/:id', async (request, response) => {
   };
 
   try {
-    const updatedBlogpost = await Blog.findByIdAndUpdate(
+    const updatedBlogpost = await Blogpost.findByIdAndUpdate(
       request.params.id,
       blogPost,
       { new: true },

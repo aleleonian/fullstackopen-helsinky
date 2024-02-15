@@ -22,26 +22,26 @@ beforeEach(async () => {
 
 test('blogs are returned as json', async () => {
   await api
-    .get('/api/blogs')
+    .get('/api/blogposts')
     .expect(200)
     .expect('Content-Type', /application\/json/);
 });
 
 test('correct amounts of blog posts', async () => {
-  const response = await api.get('/api/blogs');
+  const response = await api.get('/api/blogposts');
 
   expect(response.body).toHaveLength(6);
 });
 
 test('verifies that the unique identifier property of the blog posts is named id,', async () => {
-  const response = await api.get('/api/blogs');
+  const response = await api.get('/api/blogposts');
 
   expect(response.body[0].id).toBeDefined();
   expect(response.body[0]._id).toBeFalsy();
 });
 
 test('a valid blog post can be added', async () => {
-  let response = await api.get('/api/blogs');
+  let response = await api.get('/api/blogposts');
 
   initialLength = response.body.length;
 
@@ -54,12 +54,12 @@ test('a valid blog post can be added', async () => {
   };
 
   await api
-    .post('/api/blogs')
+    .post('/api/blogposts')
     .send(newBlogPost)
     .expect(201)
     .expect('Content-Type', /application\/json/);
 
-  response = await api.get('/api/blogs');
+  response = await api.get('/api/blogposts');
 
   expect(response.body).toHaveLength(initialLength + 1);
 
@@ -71,7 +71,7 @@ test('a valid blog post can be added', async () => {
 });
 
 test('likes default to 0 if absent in post data', async () => {
-  let response = await api.get('/api/blogs');
+  let response = await api.get('/api/blogposts');
 
   const newBlogPost = {
     title: 'Default likes to 0',
@@ -80,12 +80,12 @@ test('likes default to 0 if absent in post data', async () => {
   };
 
   await api
-    .post('/api/blogs')
+    .post('/api/blogposts')
     .send(newBlogPost)
     .expect(201)
     .expect('Content-Type', /application\/json/);
 
-  response = await api.get('/api/blogs');
+  response = await api.get('/api/blogposts');
 
   const desiredPost = response.body.find((blogPost) => blogPost.title === 'Default likes to 0');
 
@@ -100,17 +100,17 @@ test('title or url cannot be missing', async () => {
   };
 
   await api
-    .post('/api/blogs')
+    .post('/api/blogposts')
     .send(newBlogPost)
     .expect(400);
 });
 
 test('can delete a document', async () => {
   await api
-    .delete('/api/blogs/5a422a851b54a676234d17f7')
+    .delete('/api/blogposts/5a422a851b54a676234d17f7')
     .expect(204);
 
-  const response = await api.get('/api/blogs');
+  const response = await api.get('/api/blogposts');
 
   expect(response.body).toHaveLength(initialLength - 1);
 });

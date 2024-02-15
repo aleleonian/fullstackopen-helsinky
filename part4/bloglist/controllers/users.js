@@ -6,8 +6,16 @@ const User = require('../models/user');
 
 usersRouter.get('/api/users', async (request, response) => {
   try {
-    const allUsers = (await User.find({})).map((user) => user.toJSON());
-    response.json(allUsers);
+    // const allUsers = (await User.find({})).map((user) => user.toJSON());
+
+    // const allUsers = (await User.find({}).populate('blogposts')).map((user) => user.toJSON());
+
+    // response.json(allUsers);
+
+    const users = await User
+      .find({}).populate('blogposts');
+
+    response.json(users);
   } catch (error) {
     // eslint-disable-next-line no-console
     console.log('error->', error);

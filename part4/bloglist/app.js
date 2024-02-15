@@ -10,7 +10,7 @@ const config = require('./utils/config');
 
 const mongoUrl = config.MONGODB_URI;
 
-const blogRouter = require('./controllers/blog');
+const blogRouter = require('./controllers/blogpost');
 const usersRouter = require('./controllers/users');
 
 mongoose.connect(mongoUrl);
