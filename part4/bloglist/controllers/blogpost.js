@@ -57,7 +57,7 @@ blogRouter.delete('/api/blogposts/:id', async (request, response) => {
   if (!decodedToken.id) {
     return response.status(401).json({ error: 'token invalid' });
   }
-  
+
   const isValidObjectId = mongoose.Types.ObjectId.isValid(request.params.id);
 
   let objectId;
@@ -73,7 +73,7 @@ blogRouter.delete('/api/blogposts/:id', async (request, response) => {
   try {
     const desiredBlogpost = await Blogpost.findById(objectId);
 
-    if (desiredBlogpost.id === decodedToken.id) {
+    if (desiredBlogpost.user.toString() === decodedToken.id) {
       const deletedDocument = await Blogpost.findByIdAndDelete(objectId);
 
       if (deletedDocument) {
@@ -87,11 +87,10 @@ blogRouter.delete('/api/blogposts/:id', async (request, response) => {
       return response.status(401).json({ error: 'Documents can only be deleted by owners.' });
     }
   } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error('Error deleting document:', error);
+    return response.status(401).send(`Error deleting document:${error.message}`);
   }
 
-  return response.status(204).end();
+  return response.status(204).json('document deleted successfully!');
 });
 
 blogRouter.put('/api/blogposts/:id', async (request, response) => {

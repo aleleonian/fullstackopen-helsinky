@@ -41,7 +41,7 @@ usersRouter.post('/api/users', async (request, response) => {
 
   try {
     const savedUser = await user.save();
-    response.status(201).json(savedUser);
+    return response.status(201).json(savedUser);
   } catch (error) {
     return response.status(400).json({ error: error.name, message: error.message });
   }
