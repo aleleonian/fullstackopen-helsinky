@@ -5,9 +5,14 @@ const app = require('../app');
 
 const api = supertest(app);
 
-// const User = require('../models/user');
+const User = require('../models/user');
 
-// TODO: clear the db and fill it before starting the tests
+let currentLength;
+
+beforeAll(async () => {
+  currentLength = (await User.find({})).length;
+});
+
 describe('Invalid user creation', () => {
   test('Invalid password', async () => {
     const newUser = {
@@ -71,22 +76,41 @@ describe('Invalid user creation', () => {
 
     expect(response.body.message).toMatch(/name: Path `name` \((.*?)\) is shorter than the minimum allowed length \(\d+\)\.$/);
   });
+
+  test('Empty name', async () => {
+    const newUser = {
+      username: 'theusername',
+      name: '',
+      password: 'thelongpassword',
+    };
+
+    const response = await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(400)
+      .expect('Content-Type', /application\/json/);
+
+    expect(response.body.message).toMatch(/`name` is required./);
+  });
 });
 
-test('Empty name', async () => {
-  const newUser = {
-    username: 'theusername',
-    name: '',
-    password: 'thelongpassword',
-  };
+describe('Valid user creation', () => {
+  test('Valid new user', async () => {
+    const newUser = {
+      username: 'dummyvaliduser',
+      name: 'Dummy Valid User',
+      password: 'dummyvaliduser1234',
+    };
 
-  const response = await api
-    .post('/api/users')
-    .send(newUser)
-    .expect(400)
-    .expect('Content-Type', /application\/json/);
+    await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(201)
+      .expect('Content-Type', /application\/json/);
 
-  expect(response.body.message).toMatch(/`name` is required./);
+    const howManyUsers = (await User.find({})).length;
+    expect(howManyUsers).toBe(currentLength + 1);
+  });
 });
 
 afterAll(async () => {
