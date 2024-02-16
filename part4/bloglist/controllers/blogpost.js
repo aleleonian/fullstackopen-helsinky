@@ -15,8 +15,6 @@ blogRouter.get('/api/blogposts', async (request, response) => {
 });
 
 blogRouter.post('/api/blogposts', async (request, response) => {
-  console.log('request.token->', request.token);
-
   let decodedToken;
   try {
     decodedToken = jwt.verify(request.token, process.env.SECRET);
@@ -54,6 +52,12 @@ blogRouter.post('/api/blogposts', async (request, response) => {
 });
 
 blogRouter.delete('/api/blogposts/:id', async (request, response) => {
+  const decodedToken = jwt.verify(request.token, process.env.SECRET);
+
+  if (!decodedToken.id) {
+    return response.status(401).json({ error: 'token invalid' });
+  }
+  
   const isValidObjectId = mongoose.Types.ObjectId.isValid(request.params.id);
 
   let objectId;
@@ -67,14 +71,20 @@ blogRouter.delete('/api/blogposts/:id', async (request, response) => {
   }
 
   try {
-    const deletedDocument = await Blogpost.findByIdAndDelete(objectId);
+    const desiredBlogpost = await Blogpost.findById(objectId);
 
-    if (deletedDocument) {
-      // eslint-disable-next-line no-console
-      console.log('Document deleted successfully:', deletedDocument);
+    if (desiredBlogpost.id === decodedToken.id) {
+      const deletedDocument = await Blogpost.findByIdAndDelete(objectId);
+
+      if (deletedDocument) {
+        // eslint-disable-next-line no-console
+        console.log('Document deleted successfully:', deletedDocument);
+      } else {
+        // eslint-disable-next-line no-console
+        console.log('Document not found');
+      }
     } else {
-      // eslint-disable-next-line no-console
-      console.log('Document not found');
+      return response.status(401).json({ error: 'Documents can only be deleted by owners.' });
     }
   } catch (error) {
     // eslint-disable-next-line no-console
