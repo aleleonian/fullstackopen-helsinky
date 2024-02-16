@@ -52,9 +52,7 @@ blogRouter.post('/api/blogposts', async (request, response) => {
 });
 
 blogRouter.delete('/api/blogposts/:id', async (request, response) => {
-  const decodedToken = jwt.verify(request.token, process.env.SECRET);
-
-  if (!decodedToken.id) {
+  if (!request.userId) {
     return response.status(401).json({ error: 'token invalid' });
   }
 
@@ -73,7 +71,7 @@ blogRouter.delete('/api/blogposts/:id', async (request, response) => {
   try {
     const desiredBlogpost = await Blogpost.findById(objectId);
 
-    if (desiredBlogpost.user.toString() === decodedToken.id) {
+    if (desiredBlogpost.user.toString() === request.userId) {
       const deletedDocument = await Blogpost.findByIdAndDelete(objectId);
 
       if (deletedDocument) {
