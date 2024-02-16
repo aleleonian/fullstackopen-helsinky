@@ -21,10 +21,10 @@ mongoose.connect(mongoUrl);
 app.use(cors());
 app.use(express.json());
 app.use(middleware.tokenExtractor);
-app.use(middleware.userExtractor);
-app.use(blogRouter);
-app.use(usersRouter);
-app.use(loginRouter);
+// app.use(middleware.userExtractor);
+app.use('/api/blogposts', middleware.userExtractor, blogRouter);
+app.use('/api/users', usersRouter);
+app.use('/api/login', loginRouter);
 app.use(middleware.unknownEndpoint);
 app.use(middleware.errorHandler);
 

@@ -4,7 +4,7 @@ const usersRouter = require('express').Router();
 
 const User = require('../models/user');
 
-usersRouter.get('/api/users', async (request, response) => {
+usersRouter.get('/', async (request, response) => {
   try {
     // const allUsers = (await User.find({})).map((user) => user.toJSON());
 
@@ -23,7 +23,7 @@ usersRouter.get('/api/users', async (request, response) => {
   }
 });
 
-usersRouter.post('/api/users', async (request, response) => {
+usersRouter.post('/', async (request, response) => {
   const { username, name, password } = request.body;
 
   if (!password || password.length < 7) {

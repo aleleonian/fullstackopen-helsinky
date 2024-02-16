@@ -9,12 +9,12 @@ const Blogpost = require('../models/blogpost');
 
 const User = require('../models/user');
 
-blogRouter.get('/api/blogposts', async (request, response) => {
+blogRouter.get('/', async (request, response) => {
   const blogPosts = await Blogpost.find({}).populate('user');
   response.json(blogPosts);
 });
 
-blogRouter.post('/api/blogposts', async (request, response) => {
+blogRouter.post('/', async (request, response) => {
   let decodedToken;
   try {
     decodedToken = jwt.verify(request.token, process.env.SECRET);
@@ -51,7 +51,7 @@ blogRouter.post('/api/blogposts', async (request, response) => {
   }
 });
 
-blogRouter.delete('/api/blogposts/:id', async (request, response) => {
+blogRouter.delete('/:id', async (request, response) => {
   if (!request.userId) {
     return response.status(401).json({ error: 'token invalid' });
   }
@@ -91,7 +91,7 @@ blogRouter.delete('/api/blogposts/:id', async (request, response) => {
   return response.status(204).json('document deleted successfully!');
 });
 
-blogRouter.put('/api/blogposts/:id', async (request, response) => {
+blogRouter.put('/:id', async (request, response) => {
   const { body } = request.body;
 
   const blogPost = {
