@@ -74,62 +74,97 @@ beforeAll(async () => {
 beforeEach(async () => {
   await Blogpost.deleteMany({});
 
-  const blogpostObjects = helper.initialBlogPosts.map((bp) => new Blogpost(bp));
+  const blogpostObjects = helper.initialBlogPosts.map((bp) => {
+    // eslint-disable-next-line no-param-reassign
+    bp.user = firstUser.id;
+    return new Blogpost(bp);
+  });
+
+  initialLength = blogpostObjects.length;
 
   const promiseArray = blogpostObjects.map((bp) => bp.save());
 
   await Promise.all(promiseArray);
 });
 
-test('blogs are returned as json', async () => {
+test('can\'t retrieve blogs without an auth token', async () => {
   await api
     .get('/api/blogposts')
+    .expect(400)
+    .expect('Content-Type', /application\/json/);
+});
+
+test('blogs are returned as json if i use an auth token', async () => {
+  await api
+    .get('/api/blogposts')
+    .set('Authorization', `Bearer ${firstUser.token}`)
     .expect(200)
     .expect('Content-Type', /application\/json/);
 });
 
-// test('correct amounts of blog posts', async () => {
-//   const response = await api.get('/api/blogposts');
+test('correct amounts of blog posts', async () => {
+  const response = await api
+    .get('/api/blogposts')
+    .set('Authorization', `Bearer ${firstUser.token}`);
 
-//   expect(response.body).toHaveLength(6);
-// });
+  expect(response.body).toHaveLength(initialLength);
+});
 
-// test('verifies that the unique identifier property of the blog posts is named id,', async () => {
-//   const response = await api.get('/api/blogposts');
+test('verifies that the unique identifier property of the blog posts is named id,', async () => {
+  const response = await api
+    .get('/api/blogposts')
+    .set('Authorization', `Bearer ${firstUser.token}`);
 
-//   expect(response.body[0].id).toBeDefined();
-//   expect(response.body[0]._id).toBeFalsy();
-// });
+  expect(response.body[0].id).toBeDefined();
+  // eslint-disable-next-line no-underscore-dangle
+  expect(response.body[0]._id).toBeFalsy();
+});
 
-// test('a valid blog post can be added', async () => {
-//   let response = await api.get('/api/blogposts');
+test('a blog post cannot be added without an auth token', async () => {
+  const newBlogPost = {
+    title: 'Como hacer el puré perfecto',
+    author: 'Francis Malmann',
+    url: 'https://www.elcocinillas.com/pure-perfecto',
+    likes: 23,
+    user: secondUser.id,
+  };
 
-//   initialLength = response.body.length;
+  await api
+    .post('/api/blogposts')
+    .send(newBlogPost)
+    .expect(400)
+    .expect('Content-Type', /application\/json/);
+});
 
-//   const newBlogPost = {
-//     title: 'Como hacer el puré perfecto',
-//     author: 'Alejandro Leonian',
-//     url: 'https://www.elcocinillas.com/pure-perfecto',
-//     likes: 23,
-//     __v: 0,
-//   };
+test('a blog post can be added with an auth token', async () => {
+  const newBlogPost = {
+    title: 'Como hacer el puré perfecto',
+    author: 'Francis Malmann',
+    url: 'https://www.elcocinillas.com/pure-perfecto',
+    likes: 23,
+    user: secondUser.id,
+  };
 
-//   await api
-//     .post('/api/blogposts')
-//     .send(newBlogPost)
-//     .expect(201)
-//     .expect('Content-Type', /application\/json/);
+  await api
+    .post('/api/blogposts')
+    .set('Authorization', `Bearer ${firstUser.token}`)
+    .send(newBlogPost)
+    .expect(201)
+    .expect('Content-Type', /application\/json/);
 
-//   response = await api.get('/api/blogposts');
+  // let's make sure the blogpost was added
+  response = await api
+    .get('/api/blogposts')
+    .set('Authorization', `Bearer ${firstUser.token}`);
 
-//   expect(response.body).toHaveLength(initialLength + 1);
+  expect(response.body).toHaveLength(initialLength + 1);
 
-//   const contents = response.body.map((bp) => bp.title);
+  const contents = response.body.map((bp) => bp.title);
 
-//   expect(contents).toContain(
-//     'Como hacer el puré perfecto',
-//   );
-// });
+  expect(contents).toContain(
+    'Como hacer el puré perfecto',
+  );
+});
 
 // test('likes default to 0 if absent in post data', async () => {
 //   let response = await api.get('/api/blogposts');
