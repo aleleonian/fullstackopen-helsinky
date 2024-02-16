@@ -11,7 +11,7 @@ const Blogpost = require('../models/blogpost');
 
 const User = require('../models/user');
 
-let initialLength;
+let currentLength;
 
 const firstUser = {
   username: 'firstuser',
@@ -80,7 +80,7 @@ beforeEach(async () => {
     return new Blogpost(bp);
   });
 
-  initialLength = blogpostObjects.length;
+  currentLength = blogpostObjects.length;
 
   const promiseArray = blogpostObjects.map((bp) => bp.save());
 
@@ -107,7 +107,7 @@ test('correct amounts of blog posts', async () => {
     .get('/api/blogposts')
     .set('Authorization', `Bearer ${firstUser.token}`);
 
-  expect(response.body).toHaveLength(initialLength);
+  expect(response.body).toHaveLength(currentLength);
 });
 
 test('verifies that the unique identifier property of the blog posts is named id,', async () => {
@@ -157,7 +157,9 @@ test('a blog post can be added with an auth token', async () => {
     .get('/api/blogposts')
     .set('Authorization', `Bearer ${firstUser.token}`);
 
-  expect(response.body).toHaveLength(initialLength + 1);
+  expect(response.body).toHaveLength(currentLength + 1);
+
+  currentLength += 1;
 
   const contents = response.body.map((bp) => bp.title);
 
@@ -166,50 +168,71 @@ test('a blog post can be added with an auth token', async () => {
   );
 });
 
-// test('likes default to 0 if absent in post data', async () => {
-//   let response = await api.get('/api/blogposts');
+test('likes default to 0 if absent in post data', async () => {
+  let response = await api.get('/api/blogposts');
 
-//   const newBlogPost = {
-//     title: 'Default likes to 0',
-//     author: 'Alejandro Leonian',
-//     url: 'https://www.elcocinillas.com/pure-perfecto',
-//   };
+  const newBlogPost = {
+    title: 'Default likes to 0',
+    author: 'Alejandro Leonian',
+    url: 'https://www.elcocinillas.com/pure-perfecto',
+  };
 
-//   await api
-//     .post('/api/blogposts')
-//     .send(newBlogPost)
-//     .expect(201)
-//     .expect('Content-Type', /application\/json/);
+  await api
+    .post('/api/blogposts')
+    .set('Authorization', `Bearer ${firstUser.token}`)
+    .send(newBlogPost)
+    .expect(201)
+    .expect('Content-Type', /application\/json/);
 
-//   response = await api.get('/api/blogposts');
+  response = await api
+    .get('/api/blogposts')
+    .set('Authorization', `Bearer ${firstUser.token}`);
 
-//   const desiredPost = response.body.find((blogPost) => blogPost.title === 'Default likes to 0');
+  const desiredPost = response.body.find((blogPost) => blogPost.title === 'Default likes to 0');
 
-//   expect(desiredPost.likes).toBe(
-//     0,
-//   );
-// });
+  expect(desiredPost.likes).toBe(
+    0,
+  );
 
-// test('title or url cannot be missing', async () => {
-//   const newBlogPost = {
-//     author: 'Alejandro Leonian',
-//   };
+  currentLength += 1;
+});
 
-//   await api
-//     .post('/api/blogposts')
-//     .send(newBlogPost)
-//     .expect(400);
-// });
+test('title or url cannot be missing', async () => {
+  const newBlogPost = {
+    author: 'Alejandro Leonian',
+  };
 
-// test('can delete a document', async () => {
-//   await api
-//     .delete('/api/blogposts/5a422a851b54a676234d17f7')
-//     .expect(204);
+  await api
+    .post('/api/blogposts')
+    .set('Authorization', `Bearer ${firstUser.token}`)
+    .send(newBlogPost)
+    .expect(400);
+});
 
-//   const response = await api.get('/api/blogposts');
+test('can\'t delete somebody else\'s document', async () => {
+  const response = await api
+    .delete('/api/blogposts/5a422a851b54a676234d17f7')
+    .set('Authorization', `Bearer ${secondUser.token}`)
+    .expect(401);
 
-//   expect(response.body).toHaveLength(initialLength - 1);
-// });
+  expect(response.body.error).toContain(
+    'Documents can only be deleted by owners.',
+  );
+});
+
+test('a user can delete a document if that user created it ', async () => {
+  await api
+    .delete('/api/blogposts/5a422a851b54a676234d17f7')
+    .set('Authorization', `Bearer ${firstUser.token}`)
+    .expect(204);
+
+  const response = await api
+    .get('/api/blogposts')
+    .set('Authorization', `Bearer ${firstUser.token}`);
+
+  expect(response.body).toHaveLength(currentLength - 1);
+  currentLength -= 1;
+});
 
 afterAll(async () => {
   await mongoose.connection.close();
