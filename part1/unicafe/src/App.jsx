@@ -1,4 +1,14 @@
+import React from 'react';
 import { useState } from 'react'
+
+const generateAverage = (good, bad, neutral) => {
+  if (good === 0 && bad === 0 && neutral === 0) return 0;
+  return ((good * 1) + (neutral * 0) + (bad * -1)) / (good + neutral + bad)
+}
+const generatePositive = (good, bad, neutral) => {
+  if (good === 0 && bad === 0 && neutral === 0) return 0;
+  return ((good + neutral) / (good + neutral + bad)) * 100;
+}
 
 const Button = ({ title, onClickHandler }) => {
   return (
@@ -6,16 +16,61 @@ const Button = ({ title, onClickHandler }) => {
   )
 };
 
+const StatisticLine = ({ title, value }) => {
+  return (
+    <React.Fragment>
+      <td>
+        {title}:
+      </td>
+      <td>
+        {value}
+      </td>
+    </React.Fragment>
+  )
+}
+const Statistics = ({ good, neutral, bad }) => {
+  return (
+    <React.Fragment>
+      {good > 0 || neutral > 0 || bad > 0 ?
+        <React.Fragment>
+
+          <table>
+            <thead>
+              <tr><td><h1> Statistics </h1></td></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <StatisticLine title={"Good"} value={good} />
+              </tr>
+              <tr>
+                <StatisticLine title={"Neutral"} value={neutral} />
+              </tr>
+              <tr>
+                <StatisticLine title={"Bad"} value={bad} />
+              </tr>
+              <tr>
+                <StatisticLine title={"Total"} value={good + neutral + bad} />
+              </tr>
+              <tr>
+                <StatisticLine title={"Average"} value={generateAverage(good, neutral, bad)} />
+              </tr>
+              <tr>
+                <StatisticLine title={"Positive"} value={generatePositive(good, neutral, bad)} />
+              </tr>
+            </tbody>
+          </table>
+        </React.Fragment>
+        :
+        "No feedback given"}
+    </React.Fragment>
+  )
+}
+
 const App = () => {
   // save clicks of each button to its own state
   const [good, setGood] = useState(0);
   const [neutral, setNeutral] = useState(0);
   const [bad, setBad] = useState(0);
-
-  // const clickHandler = (counter, counterFunction) => {
-  //   let newCounter = counter + 1;
-  //   counterFunction(newCounter);
-  // }
 
   const goodClickHandler = () => {
     let goodCounter = good;
@@ -30,15 +85,6 @@ const App = () => {
     setBad(badCounter + 1);
   }
 
-  const generateAverage = (good, bad, neutral) => {
-    if (good === 0 && bad === 0 && neutral === 0) return 0;
-    return ((good * 1) + (neutral * 0) + (bad * -1)) / (good + neutral + bad)
-  }
-  const generatePositive = (good, bad, neutral) => {
-    if (good === 0 && bad === 0 && neutral === 0) return 0;
-    return ((good + neutral) / (good + neutral + bad)) * 100;
-  }
-
   return (
     <div>
       <h1>Give Feedback</h1>
@@ -46,30 +92,7 @@ const App = () => {
       <Button title="neutral" onClickHandler={neutralClickHandler} />
       <Button title="bad" onClickHandler={badClickHandler} />
       <br />
-      <h1> Statistics </h1>
-      <div>
-        Good: {good}
-      </div>
-      <br />
-      <div>
-        Neutral: {neutral}
-      </div>
-      <br />
-      <div>
-        Bad: {bad}
-      </div>
-      <br />
-      <div>
-        Total: {good + neutral + bad}
-      </div>
-      <br />
-      <div>
-        Average: {generateAverage(good, neutral, bad)}
-      </div>
-      <br />
-      <div>
-        Positive: {generatePositive(good, neutral, bad)}%
-      </div>
+      <Statistics good={good} neutral={neutral} bad={bad} />
     </div>
   )
 }
