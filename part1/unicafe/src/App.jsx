@@ -1,13 +1,13 @@
 import React from 'react';
 import { useState } from 'react'
 
-const generateAverage = (good, bad, neutral) => {
+const generateAverage = (good, neutral, bad) => {
   if (good === 0 && bad === 0 && neutral === 0) return 0;
-  return ((good * 1) + (neutral * 0) + (bad * -1)) / (good + neutral + bad)
+  return ((good * 1) + 0 + (bad * -1)) / (good + neutral + bad)
 }
-const generatePositive = (good, bad, neutral) => {
+const generatePositive = (good, neutral, bad) => {
   if (good === 0 && bad === 0 && neutral === 0) return 0;
-  return ((good + neutral) / (good + neutral + bad)) * 100;
+  return ((good) / (good + neutral + bad)) * 100;
 }
 
 const Button = ({ title, onClickHandler }) => {
