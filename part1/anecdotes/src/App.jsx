@@ -1,3 +1,4 @@
+import React from "react";
 import { useState } from "react";
 
 const App = () => {
@@ -13,17 +14,51 @@ const App = () => {
   ];
 
   const [selected, setSelected] = useState(0);
+  const [votes, setVotes] = useState(Array(anecdotes.length).fill(0));
 
   function selectRandomAnecdote() {
     const randomIndex = Math.floor(Math.random() * anecdotes.length);
     setSelected(randomIndex);
   }
 
+  function voteForThisAnecdote() {
+    const newVotes = [...votes];
+    newVotes[selected] += 1;
+    setVotes(newVotes);
+  }
+
+  function MostVotedAnecdote() {
+    return (
+      <React.Fragment>
+      <h1>Anecdote with most votes</h1>
+        {anecdotes[mostVotedAnecdoteIndex()]}
+        <br />
+        Has {votes[mostVotedAnecdoteIndex()]} votes.
+      </React.Fragment>
+    );
+  }
+
+  function mostVotedAnecdoteIndex() {
+    let mostVotedIndex;
+    for (let i = 0; i < votes.length; i++) {
+      if (votes[i] > 0) {
+        if (!mostVotedIndex) mostVotedIndex = i;
+        else if (votes[i] > votes[mostVotedIndex]) mostVotedIndex = i;
+      }
+    }
+    return mostVotedIndex;
+  }
   return (
     <div>
+      <h1>Anecdote of the day</h1>
       {anecdotes[selected]}
       <br />
+      Has {votes[selected]} votes.
+      <br />
+      <button onClick={voteForThisAnecdote}>Vote</button>
       <button onClick={selectRandomAnecdote}> Next Anecdote </button>
+      <br />
+      {mostVotedAnecdoteIndex() ? <MostVotedAnecdote /> : ""}
     </div>
   );
 };
