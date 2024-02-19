@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react'
-import axios from 'axios'
+import { useState, useEffect } from 'react';
+import axios from 'axios';
+import personService from './services/persons';
 
 const App = () => {
   const [persons, setPersons] = useState([]);
@@ -8,8 +9,8 @@ const App = () => {
   const [searchFilter, setSearchFilter] = useState("");
 
   useEffect(() => {
-    axios
-      .get('http://localhost:3001/persons').then(response => {
+    personService.getAll()
+      .then(response => {
         setPersons(response.data)
       })
   }, [])
@@ -28,13 +29,23 @@ const App = () => {
         return;
       }
       const newPersons = [...persons];
-      newPersons.push({ name: newName, number: newNumber });
+      const newPersonObj = { name: newName, number: newNumber };
+      newPersons.push(newPersonObj);
       setPersons(newPersons);
+
+      personService.create(newPersonObj)
+        .then(response => {
+          console.log(response)
+        })
+        .catch(error => {
+          alert('Error saving data to server: ' + error);
+        })
     }
     else {
       alert(`${newName} is already added to phonebook`);
     }
     setNewName("");
+    setNewNumber("");
   };
 
   const setTheName = (event) => {
@@ -49,6 +60,23 @@ const App = () => {
     const value = event.target.value;
     setNewNumber(value);
   };
+
+  const deletePerson = (personId, personName) => {
+
+    if (confirm('Do you really want to delete the contact for ' + personName + '?')) {
+      const newPersons = [...persons];
+      const personIndex = newPersons.findIndex(person => person.id === personId);
+      newPersons.splice(personIndex, 1)
+      setPersons(newPersons);
+      personService.delete(personId)
+        .then(response => {
+          console.log(response)
+        })
+        .catch(error => {
+          alert('Error deleting data from server: ' + error);
+        })
+    }
+  }
   return (
     <div>
       <h2>Phonebook</h2>
@@ -65,7 +93,7 @@ const App = () => {
 
       <h2>Numbers</h2>
 
-      <Persons persons={persons} searchFilter={searchFilter} />
+      <Persons persons={persons} searchFilter={searchFilter} deleteHandler={deletePerson} />
 
     </div>
   );
@@ -95,7 +123,7 @@ const PersonForm = ({ nameState, nameStateHandler, numberState, numberStateHandl
     </form>
   )
 }
-const Persons = ({ persons, searchFilter }) => {
+const Persons = ({ persons, searchFilter, deleteHandler }) => {
   return (
     <>
       {
@@ -107,6 +135,7 @@ const Persons = ({ persons, searchFilter }) => {
           .map((person, index) => (
             <div key={person.name}>
               {person.name}:{person.number}
+              <button onClick={() => { deleteHandler(person.id, person.name) }}>delete</button>
               {index !== persons.length - 1 && <br />}{" "}
             </div>
           ))
