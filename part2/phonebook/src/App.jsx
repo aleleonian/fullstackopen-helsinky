@@ -15,21 +15,29 @@ const App = () => {
       })
   }, [])
 
-  const personDoesNotAlreadyExist = (name) => {
+  const findPersonByName = (name) => {
     return persons.find(person => {
       if (person.name.toLowerCase() === name.toLowerCase()) return true;
     });
   }
 
   const addPerson = (event) => {
+
     event.preventDefault();
-    if (!personDoesNotAlreadyExist(newName)) {
+
+    const person = findPersonByName(newName);
+
+    const personIndex = persons.findIndex(person => person.name === newName);
+
+    const newPersons = [...persons];
+
+    const newPersonObj = { name: newName, number: newNumber };
+
+    if (!person) {
       if (!newNumber || newNumber.length === 0) {
         alert('You must add a phone number!');
         return;
       }
-      const newPersons = [...persons];
-      const newPersonObj = { name: newName, number: newNumber };
       newPersons.push(newPersonObj);
       setPersons(newPersons);
 
@@ -42,7 +50,11 @@ const App = () => {
         })
     }
     else {
-      alert(`${newName} is already added to phonebook`);
+      if (confirm(`${newName} is already added to the phonebook, replace the old number with a new one?`)) {
+        newPersons[personIndex].number = newNumber;
+        setPersons(newPersons);
+        personService.update(person.id, newPersonObj);
+      }
     }
     setNewName("");
     setNewNumber("");
