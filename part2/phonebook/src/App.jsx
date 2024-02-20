@@ -7,7 +7,8 @@ const App = () => {
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [searchFilter, setSearchFilter] = useState("");
-  const [successMessage, setSuccessMessage] = useState(null)
+  const [successMessage, setSuccessMessage] = useState(null);
+  const [errorMessage, setErrorMessage] = useState(null);
 
   useEffect(() => {
     personService.getAll()
@@ -22,6 +23,7 @@ const App = () => {
     });
   }
 
+
   const addPerson = (event) => {
 
     event.preventDefault();
@@ -34,6 +36,7 @@ const App = () => {
 
     const newPersonObj = { name: newName, number: newNumber };
 
+    // is this person not part of our agenda?
     if (!person) {
       if (!newNumber || newNumber.length === 0) {
         alert('You must add a phone number!');
@@ -58,6 +61,7 @@ const App = () => {
           alert('Error saving data to server: ' + error);
         })
     }
+    // in case it is, shall we update the contact number?
     else {
       if (confirm(`${newName} is already added to the phonebook, replace the old number with a new one?`)) {
         newPersons[personIndex].number = newNumber;
@@ -70,7 +74,15 @@ const App = () => {
             }, 2000);
           })
           .catch(error => {
-            alert('Error updating data to server: ' + error);
+            if (error.message.indexOf("status code 404" > -1)) {
+              setErrorMessage(`Information of ${newPersonObj.name} has already been removed from server.`);
+              //we gotta remove this person locally so its not displayed anymore
+              newPersons.splice(personIndex, 1)
+              setPersons(newPersons);
+            }
+            setTimeout(() => {
+              setErrorMessage(null)
+            }, 2000);
           })
       }
     }
@@ -111,7 +123,9 @@ const App = () => {
     <div>
       <h2>Phonebook</h2>
 
-      <Notification message={successMessage} />
+      <Notification message={successMessage} type="success" />
+
+      <Notification message={errorMessage} type="error" />
 
       <Filter searchFilterHandler={setTheSearchFilter} searchFilter={searchFilter} />
 
@@ -176,13 +190,13 @@ const Persons = ({ persons, searchFilter, deleteHandler }) => {
   )
 }
 
-const Notification = ({ message }) => {
+const Notification = ({ message, type }) => {
   if (message === null) {
     return null
   }
 
   return (
-    <div className="success">
+    <div className={type}>
       {message}
     </div>
   )
