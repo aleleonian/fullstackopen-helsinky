@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
 import personService from './services/persons';
+import './assets/App.css'
 
 const App = () => {
   const [persons, setPersons] = useState([]);
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [searchFilter, setSearchFilter] = useState("");
+  const [successMessage, setSuccessMessage] = useState(null)
 
   useEffect(() => {
     personService.getAll()
@@ -38,12 +39,20 @@ const App = () => {
         alert('You must add a phone number!');
         return;
       }
-      newPersons.push(newPersonObj);
-      setPersons(newPersons);
 
       personService.create(newPersonObj)
         .then(response => {
-          console.log(response)
+          console.log(response);
+          //gotta update persons array to include the id of the newly created person
+          newPersonObj.id = response.data.id;
+          newPersons.push(newPersonObj);
+          setPersons(newPersons);
+        })
+        .then(() => {
+          setSuccessMessage("New person added!");
+          setTimeout(() => {
+            setSuccessMessage(null)
+          }, 2000);
         })
         .catch(error => {
           alert('Error saving data to server: ' + error);
@@ -53,7 +62,16 @@ const App = () => {
       if (confirm(`${newName} is already added to the phonebook, replace the old number with a new one?`)) {
         newPersons[personIndex].number = newNumber;
         setPersons(newPersons);
-        personService.update(person.id, newPersonObj);
+        personService.update(person.id, newPersonObj)
+          .then(() => {
+            setSuccessMessage("Person updated!");
+            setTimeout(() => {
+              setSuccessMessage(null)
+            }, 2000);
+          })
+          .catch(error => {
+            alert('Error updating data to server: ' + error);
+          })
       }
     }
     setNewName("");
@@ -92,6 +110,8 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+
+      <Notification message={successMessage} />
 
       <Filter searchFilterHandler={setTheSearchFilter} searchFilter={searchFilter} />
 
@@ -153,5 +173,17 @@ const Persons = ({ persons, searchFilter, deleteHandler }) => {
           ))
       }
     </>
+  )
+}
+
+const Notification = ({ message }) => {
+  if (message === null) {
+    return null
+  }
+
+  return (
+    <div className="success">
+      {message}
+    </div>
   )
 }
