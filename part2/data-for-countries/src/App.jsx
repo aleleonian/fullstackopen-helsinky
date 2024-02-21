@@ -2,15 +2,14 @@ import axios from 'axios';
 import { useState, useEffect } from 'react'
 import './App.css'
 
-const FilteredResults = ({ results }) => {
+const FilteredResults = ({ results, showClickHandler }) => {
 
   if (results.length > 10) return "Too many matches, please specify another filter.";
   else {
     return results.map((country, index) => {
       return (
         <div key={country}>
-          {country}
-          {/* <button onClick={() => { deleteHandler(person.id, person.name) }}>delete</button> */}
+          {country} &nbsp; <button onClick={() => { showClickHandler(country.toLowerCase()) }}>show</button>
           {/* {index !== results.length - 1 && <br />}{" "} */}
         </div>)
     })
@@ -20,6 +19,9 @@ const FilteredResults = ({ results }) => {
 const CountryInfo = ({ data }) => {
   return (
     <>
+      <div>
+        <h1>{data.name.common}</h1>
+      </div>
       <div>
         Capital: {data.capital}
       </div>
@@ -38,6 +40,7 @@ const CountryInfo = ({ data }) => {
   )
 }
 
+
 function App() {
 
   const [countries, setCountries] = useState("");
@@ -52,6 +55,14 @@ function App() {
       })
   }, [])
 
+  const buttonClickHandler = (country) => {
+    axios.get(`https://studies.cs.helsinki.fi/restcountries/api/name/${country}`)
+      .then(response => {
+        setCountryData(response.data);
+        setLastFetchedCountry(country);
+      })
+
+  }
   const handleInput = (event) => {
 
     const searchString = event.target.value.toLowerCase();
@@ -84,7 +95,11 @@ function App() {
         find country:<input type="text" id="countryInput" onChange={handleInput} />
       </div>
       <div>
-        {filteredCountries && <FilteredResults results={filteredCountries} />}
+        <br />
+      </div>
+      <div>
+        {filteredCountries &&
+          <FilteredResults results={filteredCountries} showClickHandler={buttonClickHandler} />}
         {countryData && <CountryInfo data={countryData} />}
       </div>
     </>
