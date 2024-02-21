@@ -18,7 +18,6 @@ const FilteredResults = ({ results }) => {
 }
 
 const CountryInfo = ({ data }) => {
-  console.log("data->", data);
   return (
     <>
       <div>
@@ -41,10 +40,10 @@ const CountryInfo = ({ data }) => {
 
 function App() {
 
-  // const [searchFilter, setSearchFilter] = useState("");
   const [countries, setCountries] = useState("");
   const [filteredCountries, setFilteredCountries] = useState(null);
   const [countryData, setCountryData] = useState(null);
+  const [lastFetchedCountry, setLastFetchedCountry] = useState(null);
 
   useEffect(() => {
     axios.get('https://studies.cs.helsinki.fi/restcountries/api/all')
@@ -64,34 +63,20 @@ function App() {
       .map(country => country.name.common);
 
     if (processedCountries.length === 1) {
-      axios.get(`https://studies.cs.helsinki.fi/restcountries/api/name/${processedCountries[0]}`)
-        .then(response => {
-          setCountryData(response.data);
-        })
+      if (processedCountries[0] !== lastFetchedCountry) {
+        axios.get(`https://studies.cs.helsinki.fi/restcountries/api/name/${processedCountries[0]}`)
+          .then(response => {
+            setCountryData(response.data);
+            setLastFetchedCountry(processedCountries[0]);
+          })
+      }
     }
-    else setCountryData(null);
-
+    else {
+      setCountryData(null);
+      setLastFetchedCountry(null);
+    }
     setFilteredCountries(processedCountries);
   }
-
-  // const filterResults = () => {
-  //   if (countries) {
-  //     const filteredCountries = countries.
-  //       filter((country) => {
-  //         if (country.name.common.toLowerCase().indexOf(searchFilter) > -1) return true;
-  //       })
-  //       .map(country => country.name.common);
-
-  //     if (filteredCountries.length === 1) {
-  //       axios.get(`https://studies.cs.helsinki.fi/restcountries/api/name/${filteredCountries[0]}`)
-  //         .then(response => {
-  //           setCountryData(response.data);
-  //         })
-  //     }
-  //     return filteredCountries;
-  //   }
-  //   else return null;
-  // }
 
   return (
     <>
