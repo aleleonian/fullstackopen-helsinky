@@ -5,15 +5,6 @@ import './App.css'
 const FilteredResults = ({ results }) => {
 
   if (results.length > 10) return "Too many matches, please specify another filter.";
-
-  // else if (results.length === 1) {
-  //   return (
-  //     <div>
-  //       <h1>{results[0] + " es la bomba"}</h1>
-  //       Capital: {countryData.capital}
-  //     </div>
-  //   );
-  // }
   else {
     return results.map((country, index) => {
       return (
@@ -24,10 +15,10 @@ const FilteredResults = ({ results }) => {
         </div>)
     })
   }
-
 }
 
 const CountryInfo = ({ data }) => {
+  console.log("data->", data);
   return (
     <>
       <div>
@@ -50,8 +41,9 @@ const CountryInfo = ({ data }) => {
 
 function App() {
 
-  const [searchFilter, setSearchFilter] = useState("");
+  // const [searchFilter, setSearchFilter] = useState("");
   const [countries, setCountries] = useState("");
+  const [filteredCountries, setFilteredCountries] = useState(null);
   const [countryData, setCountryData] = useState(null);
 
   useEffect(() => {
@@ -62,29 +54,44 @@ function App() {
   }, [])
 
   const handleInput = (event) => {
-    const inputValue = event.target.value;
-    setSearchFilter(inputValue.toLowerCase());
-    setCountryData(null);
-  }
 
-  const filterResults = () => {
-    if (countries) {
-      const filteredCountries = countries.
-        filter((country) => {
-          if (country.name.common.toLowerCase().indexOf(searchFilter) > -1) return true;
+    const searchString = event.target.value.toLowerCase();
+
+    const processedCountries = countries.
+      filter((country) => {
+        if (country.name.common.toLowerCase().indexOf(searchString) > -1) return true;
+      })
+      .map(country => country.name.common);
+
+    if (processedCountries.length === 1) {
+      axios.get(`https://studies.cs.helsinki.fi/restcountries/api/name/${processedCountries[0]}`)
+        .then(response => {
+          setCountryData(response.data);
         })
-        .map(country => country.name.common);
-
-      if (filteredCountries.length === 1) {
-        axios.get(`https://studies.cs.helsinki.fi/restcountries/api/name/${filteredCountries[0]}`)
-          .then(response => {
-            setCountryData(response.data);
-          })
-      }
-      return filteredCountries;
     }
-    else return null;
+    else setCountryData(null);
+
+    setFilteredCountries(processedCountries);
   }
+
+  // const filterResults = () => {
+  //   if (countries) {
+  //     const filteredCountries = countries.
+  //       filter((country) => {
+  //         if (country.name.common.toLowerCase().indexOf(searchFilter) > -1) return true;
+  //       })
+  //       .map(country => country.name.common);
+
+  //     if (filteredCountries.length === 1) {
+  //       axios.get(`https://studies.cs.helsinki.fi/restcountries/api/name/${filteredCountries[0]}`)
+  //         .then(response => {
+  //           setCountryData(response.data);
+  //         })
+  //     }
+  //     return filteredCountries;
+  //   }
+  //   else return null;
+  // }
 
   return (
     <>
@@ -92,7 +99,7 @@ function App() {
         find country:<input type="text" id="countryInput" onChange={handleInput} />
       </div>
       <div>
-        {searchFilter.length > 0 && <FilteredResults results={filterResults()} />}
+        {filteredCountries && <FilteredResults results={filteredCountries} />}
         {countryData && <CountryInfo data={countryData} />}
       </div>
     </>
