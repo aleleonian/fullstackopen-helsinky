@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const baseUrl = 'http://localhost:3001/persons'
+const baseUrl = import.meta.env.VITE_BACKEND;
 
 const getAll = () => {
   return axios.get(baseUrl);
