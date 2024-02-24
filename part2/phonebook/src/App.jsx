@@ -58,7 +58,7 @@ const App = () => {
           }, 2000);
         })
         .catch(error => {
-          alert('Error saving data to server: ' + error);
+          alert('Error saving data to server: ' + error.response.data.error);
         })
     }
     // in case it is, shall we update the contact number?
@@ -112,6 +112,10 @@ const App = () => {
       setPersons(newPersons);
       personService.delete(personId)
         .then(response => {
+          setSuccessMessage("Person deleted!");
+          setTimeout(() => {
+            setSuccessMessage(null)
+          }, 2000);
           console.log(response)
         })
         .catch(error => {
