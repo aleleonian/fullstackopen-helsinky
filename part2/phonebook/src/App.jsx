@@ -59,22 +59,7 @@ const App = () => {
           }, 2000);
         })
         .catch(error => {
-          if (error.response.data.indexOf("ValidationError") > -1) {
-            const lengthRegex = /`([^`]+)` \(([^)]+)\) is shorter than the minimum allowed length \((\d+)\)/;
-            const formatRegex = /number:\s*(.*?)\s*is not a valid phone number!/;
-            const lengthMatch = error.response.data.match(lengthRegex);
-            const formatMatch = error.response.data.match(formatRegex);
-            if (lengthMatch) {
-              setErrorMessage(lengthMatch[0]);
-            } else if (formatMatch){
-              setErrorMessage(formatMatch[0]);
-            } else {
-              setErrorMessage("Validation error: please check the length and format of the name and number.");
-            }
-          }
-          else {
-            setErrorMessage(`Error saving data to server: ${error.message}`);
-          }
+          setErrorMessage(error.response.data.errorMessage);
           setTimeout(() => {
             setErrorMessage(null)
           }, 2000);
@@ -147,8 +132,6 @@ const App = () => {
     }
   }
 
-  console.log("Rendering!");
-
   return (
     <div>
       <h2>Phonebook</h2>
@@ -200,24 +183,27 @@ const PersonForm = ({ nameState, nameStateHandler, numberState, numberStateHandl
   )
 }
 const Persons = ({ persons, searchFilter, deleteHandler }) => {
-  return (
-    <>
-      {
-        persons
-          .filter(person => {
-            if (searchFilter === "") return true;
-            else if (person.name.toLowerCase().indexOf(searchFilter) > -1) return true;
-          })
-          .map((person, index) => (
-            <div key={person.name}>
-              {person.name}:{person.number}
-              <button onClick={() => { deleteHandler(person.id, person.name) }}>delete</button>
-              {index !== persons.length - 1 && <br />}{" "}
-            </div>
-          ))
-      }
-    </>
-  )
+  if (typeof persons === "object" && persons.length > 0) {
+    return (
+      <>
+        {
+          persons
+            .filter(person => {
+              if (searchFilter === "") return true;
+              else if (person.name.toLowerCase().indexOf(searchFilter) > -1) return true;
+            })
+            .map((person, index) => (
+              <div key={person.name}>
+                {person.name}:{person.number}
+                <button onClick={() => { deleteHandler(person.id, person.name) }}>delete</button>
+                {index !== persons.length - 1 && <br />}{" "}
+              </div>
+            ))
+        }
+      </>
+    )
+  }
+  else return "";
 }
 
 const Notification = ({ message, type }) => {
