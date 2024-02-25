@@ -2,6 +2,12 @@ import { useState, useEffect } from 'react';
 import personService from './services/persons';
 import './assets/App.css'
 
+const vanishMessage = (setStateFunction, milliseconds) => {
+  setTimeout(
+    setStateFunction
+    , milliseconds);
+}
+
 const App = () => {
   const [persons, setPersons] = useState([]);
   const [newName, setNewName] = useState("");
@@ -39,7 +45,8 @@ const App = () => {
     // is this person not part of our agenda?
     if (!person) {
       if (!newNumber || newNumber.length === 0) {
-        alert('You must add a phone number!');
+        setErrorMessage('You must add a phone number!');
+        vanishMessage(() => setErrorMessage(null), 2000);
         return;
       }
 
@@ -54,9 +61,7 @@ const App = () => {
         })
         .then(() => {
           setSuccessMessage("New person added!");
-          setTimeout(() => {
-            setSuccessMessage(null)
-          }, 2000);
+          vanishMessage(() => setSuccessMessage(null), 2000);
         })
         .catch(error => {
           setErrorMessage(error.response.data.errorMessage);
@@ -121,13 +126,12 @@ const App = () => {
           setSuccessMessage("Person deleted!");
           newPersons.splice(personIndex, 1)
           setPersons(newPersons);
-          setTimeout(() => {
-            setSuccessMessage(null)
-          }, 2000);
+          vanishMessage(() => setSuccessMessage(null), 2000);
           console.log(response)
         })
         .catch(error => {
-          alert('Error deleting data from server: ' + error);
+          setErrorMessage('Error deleting data from server: ' + error);
+          vanishMessage(() => setSuccessMessage(null), 2000);
         })
     }
   }
