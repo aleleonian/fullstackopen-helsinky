@@ -45,11 +45,12 @@ const App = () => {
 
       personService.create(newPersonObj)
         .then(response => {
-          console.log(response);
           //gotta update persons array to include the id of the newly created person
           newPersonObj.id = response.data.id;
           newPersons.push(newPersonObj);
           setPersons(newPersons);
+          setNewName("");
+          setNewNumber("");
         })
         .then(() => {
           setSuccessMessage("New person added!");
@@ -58,7 +59,25 @@ const App = () => {
           }, 2000);
         })
         .catch(error => {
-          alert('Error saving data to server: ' + error.response.data.error);
+          if (error.response.data.indexOf("ValidationError") > -1) {
+            const lengthRegex = /`([^`]+)` \(([^)]+)\) is shorter than the minimum allowed length \((\d+)\)/;
+            const formatRegex = /number:\s*(.*?)\s*is not a valid phone number!/;
+            const lengthMatch = error.response.data.match(lengthRegex);
+            const formatMatch = error.response.data.match(formatRegex);
+            if (lengthMatch) {
+              setErrorMessage(lengthMatch[0]);
+            } else if (formatMatch){
+              setErrorMessage(formatMatch[0]);
+            } else {
+              setErrorMessage("Validation error: please check the length and format of the name and number.");
+            }
+          }
+          else {
+            setErrorMessage(`Error saving data to server: ${error.message}`);
+          }
+          setTimeout(() => {
+            setErrorMessage(null)
+          }, 2000);
         })
     }
     // in case it is, shall we update the contact number?
@@ -69,16 +88,21 @@ const App = () => {
         personService.update(person.id, newPersonObj)
           .then(() => {
             setSuccessMessage("Person updated!");
+            setNewName("");
+            setNewNumber("");
             setTimeout(() => {
               setSuccessMessage(null)
             }, 2000);
           })
           .catch(error => {
-            if (error.message.indexOf("status code 404" > -1)) {
+            if (error.message.indexOf("status code 404") > -1) {
               setErrorMessage(`Information of ${newPersonObj.name} has already been removed from server.`);
               //we gotta remove this person locally so its not displayed anymore
               newPersons.splice(personIndex, 1)
               setPersons(newPersons);
+            }
+            else {
+              setErrorMessage(`There has been an error: ${error.message}`);
             }
             setTimeout(() => {
               setErrorMessage(null)
@@ -86,8 +110,6 @@ const App = () => {
           })
       }
     }
-    setNewName("");
-    setNewNumber("");
   };
 
   const setTheName = (event) => {
@@ -108,11 +130,12 @@ const App = () => {
     if (confirm('Do you really want to delete the contact for ' + personName + '?')) {
       const newPersons = [...persons];
       const personIndex = newPersons.findIndex(person => person.id === personId);
-      newPersons.splice(personIndex, 1)
-      setPersons(newPersons);
+
       personService.delete(personId)
         .then(response => {
           setSuccessMessage("Person deleted!");
+          newPersons.splice(personIndex, 1)
+          setPersons(newPersons);
           setTimeout(() => {
             setSuccessMessage(null)
           }, 2000);
@@ -123,6 +146,9 @@ const App = () => {
         })
     }
   }
+
+  console.log("Rendering!");
+
   return (
     <div>
       <h2>Phonebook</h2>
