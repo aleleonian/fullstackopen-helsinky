@@ -44,6 +44,13 @@ const App = () => {
 
     // is this person not part of our agenda?
     if (!person) {
+
+      if (!newName || newName.length === 0) {
+        setErrorMessage('You must add a name!');
+        vanishMessage(() => setErrorMessage(null), 2000);
+        return;
+      }
+
       if (!newNumber || newNumber.length === 0) {
         setErrorMessage('You must add a phone number!');
         vanishMessage(() => setErrorMessage(null), 2000);
