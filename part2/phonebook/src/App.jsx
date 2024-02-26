@@ -75,9 +75,7 @@ const App = () => {
         })
         .catch(error => {
           setErrorMessage(error.response.data.errorMessage ? error.response.data.errorMessage : error.message);
-          setTimeout(() => {
-            setErrorMessage(null)
-          }, 2000);
+          vanishMessage(() => setErrorMessage(null), 2000);
         })
     }
     // in case it is, shall we update the contact number?
@@ -90,23 +88,11 @@ const App = () => {
             setSuccessMessage("Person updated!");
             setNewName("");
             setNewNumber("");
-            setTimeout(() => {
-              setSuccessMessage(null)
-            }, 2000);
+            vanishMessage(() => setSuccessMessage(null), 2000);
           })
           .catch(error => {
-            if (error.message.indexOf("status code 404") > -1) {
-              setErrorMessage(`Information of ${newPersonObj.name} has already been removed from server.`);
-              //we gotta remove this person locally so its not displayed anymore
-              newPersons.splice(personIndex, 1)
-              setPersons(newPersons);
-            }
-            else {
-              setErrorMessage(`There has been an error: ${error.message}`);
-            }
-            setTimeout(() => {
-              setErrorMessage(null)
-            }, 2000);
+            setErrorMessage(error.response.data.errorMessage ? error.response.data.errorMessage : error.message);
+            vanishMessage(() => setErrorMessage(null), 2000);
           })
       }
     }
