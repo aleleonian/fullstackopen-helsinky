@@ -19,14 +19,17 @@ const App = () => {
   useEffect(() => {
     personService.getAll()
       .then(response => {
-        setPersons(response.data)
+        if (Array.isArray(response.data)) setPersons(response.data);
+        else setPersons([]);
       })
   }, [])
 
   const findPersonByName = (name) => {
-    return persons.find(person => {
-      if (person.name.toLowerCase() === name.toLowerCase()) return true;
-    });
+    return persons.length > 0
+      ? persons.find(person => {
+        if (person.name.toLowerCase() === name.toLowerCase()) return true;
+      })
+      : false
   }
 
 
@@ -71,7 +74,7 @@ const App = () => {
           vanishMessage(() => setSuccessMessage(null), 2000);
         })
         .catch(error => {
-          setErrorMessage(error.response.data.errorMessage);
+          setErrorMessage(error.response.data.errorMessage ? error.response.data.errorMessage : error.message);
           setTimeout(() => {
             setErrorMessage(null)
           }, 2000);
@@ -194,7 +197,7 @@ const PersonForm = ({ nameState, nameStateHandler, numberState, numberStateHandl
   )
 }
 const Persons = ({ persons, searchFilter, deleteHandler }) => {
-  if (typeof persons === "object" && persons.length > 0) {
+  if (persons.length > 0) {
     return (
       <>
         {
