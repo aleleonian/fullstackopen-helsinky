@@ -39,8 +39,6 @@ const App = () => {
   const handleLogin = async (event) => {
     event.preventDefault();
 
-    debugger;
-
     try {
       const user = await loginService.login({
         username, password,
