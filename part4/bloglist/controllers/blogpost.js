@@ -29,12 +29,17 @@ blogRouter.post('/', async (request, response) => {
 
   const newBlogPost = request.body;
 
+  console.log("decodedToken->", JSON.stringify(decodedToken));
+  console.log("user->", JSON.stringify(user));
+  console.log("newBlogPost->", JSON.stringify(newBlogPost));
+
+
   // should not this be user._id?
   newBlogPost.user = user.id;
 
   const blog = new Blogpost(newBlogPost);
 
-  if (!blog.title || !blog.url) return response.status(400).end();
+  if (!blog.title || !blog.url) return response.status(400).json({ error: 'please check the title and url!' });
 
   if (!blog.likes) blog.likes = 0;
 

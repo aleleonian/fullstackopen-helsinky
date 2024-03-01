@@ -6,17 +6,24 @@ import './assets/App.css';
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const [user, setUser] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
 
   useEffect(() => {
     if (user !== null) {
-      blogService.getAll().then(blogs =>
+      blogService.getAll().then(blogs => {
         setBlogs(blogs)
-      );
+      })
+        .catch(error => {
+          console.log(error);
+          setErrorMessage(error);
+          setTimeout(() => {
+            setErrorMessage(null)
+          }, 5000)
+        })
     }
   }, [user]);
 
@@ -32,6 +39,8 @@ const App = () => {
   const handleLogin = async (event) => {
     event.preventDefault();
 
+    debugger;
+
     try {
       const user = await loginService.login({
         username, password,
@@ -45,7 +54,7 @@ const App = () => {
       setErrorMessage('Wrong credentials')
       setTimeout(() => {
         setErrorMessage(null)
-      }, 5000)
+      }, 5000);
     }
   }
 
@@ -82,14 +91,63 @@ const App = () => {
     location.reload();
   }
 
+  const newBlogpostHandler = (event) => {
+    event.preventDefault();
+    const formData = new FormData(document.getElementById('newBlogpost'));
+
+    const formDataObject = {};
+
+    for (const [key, value] of formData.entries()) {
+      formDataObject[key] = value;
+    }
+
+    blogService.create(formDataObject)
+      .then(response => {
+        const newBlogs = [...blogs];
+        newBlogs.push(formDataObject);
+        setSuccessMessage("Blogpost created succesfully!");
+        setBlogs(newBlogs);
+        setTimeout(() => {
+          setSuccessMessage(null)
+        }, 5000);
+
+        // now gotta add the new blogpost locally
+        // by making a new object from what was returned
+
+      })
+      .catch(exception => {
+        setErrorMessage(exception.response.data.error);
+        setTimeout(() => {
+          setErrorMessage(null)
+        }, 5000);
+      })
+  }
+
   const bloglistForm = () => {
     return (
       <div>
         <h2>blogs</h2>
         {user.name} is logged in <button onClick={logOut}>log out</button>
-        {blogs.map(blog =>
-          <Blog key={blog.id} blog={blog} />
-        )}
+
+        <h2>Create a new blogpost</h2>
+        <form id="newBlogpost">
+          <div>
+            title: <input id="title" name="title" />
+          </div>
+          <div>
+            author: <input id="author" name="author" />
+          </div>
+          <div>
+            url: <input id="url" name="url" />
+          </div>
+          <div>
+            <button onClick={newBlogpostHandler}>create</button>
+          </div>
+
+          {blogs.map(blog =>
+            <Blog key={blog.id} blog={blog} />
+          )}
+        </form>
       </div>
     )
   }
