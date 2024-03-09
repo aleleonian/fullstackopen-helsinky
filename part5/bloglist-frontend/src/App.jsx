@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react'
-import Blog from './components/Blog'
-import blogService from './services/blogs'
-import loginService from './services/login'
+import { useState, useEffect } from 'react';
+import Blog from './components/Blog';
+import blogService from './services/blogs';
+import Togglable from './components/Togglable';
+import loginService from './services/login';
 import './assets/App.css';
 
 const App = () => {
@@ -114,7 +115,7 @@ const App = () => {
 
       })
       .catch(exception => {
-        setErrorMessage(exception.response.data.error);
+        setErrorMessage(`Error creating blogpost: ${exception.response.data.error ? exception.response.data.error : exception.message}`);
         setTimeout(() => {
           setErrorMessage(null)
         }, 5000);
@@ -123,30 +124,35 @@ const App = () => {
 
   const bloglistForm = () => {
     return (
-      <div>
+      <>
         <h2>blogs</h2>
         {user.name} is logged in <button onClick={logOut}>log out</button>
+        <Togglable buttonLabel="Add new blogpost">
+          <div>
 
-        <h2>Create a new blogpost</h2>
-        <form id="newBlogpost">
-          <div>
-            title: <input id="title" name="title" />
-          </div>
-          <div>
-            author: <input id="author" name="author" />
-          </div>
-          <div>
-            url: <input id="url" name="url" />
-          </div>
-          <div>
-            <button onClick={newBlogpostHandler}>create</button>
-          </div>
 
-          {blogs.map(blog =>
-            <Blog key={blog.id} blog={blog} />
-          )}
-        </form>
-      </div>
+            <h2>Create a new blogpost</h2>
+            <form id="newBlogpost">
+              <div>
+                title: <input id="title" name="title" />
+              </div>
+              <div>
+                author: <input id="author" name="author" />
+              </div>
+              <div>
+                url: <input id="url" name="url" />
+              </div>
+              <div>
+                <button onClick={newBlogpostHandler}>create</button>
+              </div>
+
+              {blogs.map(blog =>
+                <Blog key={blog.id} blog={blog} />
+              )}
+            </form>
+          </div>
+        </Togglable>
+      </>
     )
   }
 
