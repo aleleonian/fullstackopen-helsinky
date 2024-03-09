@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react';
-import Blog from './components/Blog';
+import { useState, useEffect, useRef } from 'react'
 import blogService from './services/blogs';
-import Togglable from './components/Togglable';
 import loginService from './services/login';
+import Blog from './components/Blog';
+import { Form } from './components/Form';
 import './assets/App.css';
 
 const App = () => {
@@ -12,6 +12,8 @@ const App = () => {
   const [user, setUser] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
+
+  const blogpostFormRef = useRef();
 
   useEffect(() => {
     if (user !== null) {
@@ -90,22 +92,31 @@ const App = () => {
     location.reload();
   }
 
+  const cleanup = () => {
+    document.getElementById('title').value = "";
+    document.getElementById('author').value = "";
+    document.getElementById('url').value = "";
+  }
+
   const newBlogpostHandler = (event) => {
     event.preventDefault();
     const formData = new FormData(document.getElementById('newBlogpost'));
 
-    const formDataObject = {};
+    const newBlogpostObject = {};
 
     for (const [key, value] of formData.entries()) {
-      formDataObject[key] = value;
+      newBlogpostObject[key] = value;
     }
 
-    blogService.create(formDataObject)
-      .then(response => {
+    blogService.create(newBlogpostObject)
+      .then((response) => {
         const newBlogs = [...blogs];
-        newBlogs.push(formDataObject);
+        newBlogpostObject.id = response.data.id;
+        newBlogs.push(newBlogpostObject);
         setSuccessMessage("Blogpost created succesfully!");
+        cleanup();
         setBlogs(newBlogs);
+        blogpostFormRef.current.toggleVisibility()
         setTimeout(() => {
           setSuccessMessage(null)
         }, 5000);
@@ -122,47 +133,26 @@ const App = () => {
       })
   }
 
-  const bloglistForm = () => {
+  const loggedInuser = () => {
     return (
       <>
+        <Notification message={successMessage} type="success" />
+        <Notification message={errorMessage} type="error" />
         <h2>blogs</h2>
         {user.name} is logged in <button onClick={logOut}>log out</button>
-        <Togglable buttonLabel="Add new blogpost">
-          <div>
-
-
-            <h2>Create a new blogpost</h2>
-            <form id="newBlogpost">
-              <div>
-                title: <input id="title" name="title" />
-              </div>
-              <div>
-                author: <input id="author" name="author" />
-              </div>
-              <div>
-                url: <input id="url" name="url" />
-              </div>
-              <div>
-                <button onClick={newBlogpostHandler}>create</button>
-              </div>
-
-              {blogs.map(blog =>
-                <Blog key={blog.id} blog={blog} />
-              )}
-            </form>
-          </div>
-        </Togglable>
+        <Form createBlogpost={newBlogpostHandler} reference={blogpostFormRef}/>
+        {
+          blogs.map(blog => {
+            return <Blog key={blog.id} blog={blog} />
+          }
+          )
+        }
       </>
     )
   }
-
   return (
     <>
-      <Notification message={successMessage} type="success" />
-
-      <Notification message={errorMessage} type="error" />
-
-      {user && bloglistForm()}
+      {user && loggedInuser()}
       {!user && loginForm()}
     </>
   )
