@@ -19,7 +19,7 @@ const App = () => {
       })
         .catch(error => {
           console.log(error);
-          setErrorMessage(error);
+          setErrorMessage(`Error requesting blogposts: ${error.message}`);
           setTimeout(() => {
             setErrorMessage(null)
           }, 5000)
