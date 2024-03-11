@@ -18,6 +18,7 @@ const App = () => {
   useEffect(() => {
     if (user !== null) {
       blogService.getAll().then(blogs => {
+        blogs.sort((a, b) => b.likes - a.likes);
         setBlogs(blogs)
       })
         .catch(error => {
