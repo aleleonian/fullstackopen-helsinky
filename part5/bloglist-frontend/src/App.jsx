@@ -110,12 +110,12 @@ const App = () => {
 
     blogService.create(newBlogpostObject)
       .then((response) => {
-        const newBlogs = [...blogs];
+        const newBlogpostsArray = [...blogs];
         newBlogpostObject.id = response.data.id;
-        newBlogs.push(newBlogpostObject);
+        newBlogpostsArray.push(newBlogpostObject);
         setSuccessMessage("Blogpost created succesfully!");
         cleanup();
-        setBlogs(newBlogs);
+        setBlogs(newBlogpostsArray);
         blogpostFormRef.current.toggleVisibility()
         setTimeout(() => {
           setSuccessMessage(null)
@@ -133,6 +133,13 @@ const App = () => {
       })
   }
 
+  const updateBlogposts = (updatedBlogpost) => {
+    const desiredBlogIndex = blogs.findIndex(blog => blog.id === updatedBlogpost.id);
+    const newBlogpostsArray = [...blogs];
+    newBlogpostsArray[desiredBlogIndex] = updatedBlogpost;
+    setBlogs(newBlogpostsArray);
+
+  }
   const loggedInuser = () => {
     return (
       <>
@@ -140,10 +147,10 @@ const App = () => {
         <Notification message={errorMessage} type="error" />
         <h2>blogs</h2>
         {user.name} is logged in <button onClick={logOut}>log out</button>
-        <Form createBlogpost={newBlogpostHandler} reference={blogpostFormRef}/>
+        <Form createBlogpost={newBlogpostHandler} reference={blogpostFormRef} />
         {
           blogs.map(blog => {
-            return <Blog key={blog.id} blog={blog} />
+            return <Blog key={blog.id} blog={blog} updateBlogposts={updateBlogposts} errorMessageAlert={setErrorMessage} />
           }
           )
         }

@@ -22,4 +22,11 @@ const create = (data) => {
   }
   return axios.post(baseUrl, data, config);
 }
-export default { getAll, setToken, create }
+
+const update = (data) => {
+  const config = {
+    headers: { Authorization: token },
+  }
+  return axios.put(`${baseUrl}/${data.id}`, data, config);
+}
+export default { getAll, setToken, create, update}
