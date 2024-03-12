@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef } from 'react';
 import blogService from './services/blogs';
 import loginService from './services/login';
 import Blog from './components/Blog';
@@ -6,7 +6,7 @@ import { Form } from './components/Form';
 import './assets/App.css';
 
 const App = () => {
-  const [blogs, setBlogs] = useState([])
+  const [blogs, setBlogs] = useState([]);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [user, setUser] = useState(null);
@@ -19,27 +19,27 @@ const App = () => {
     if (user !== null) {
       blogService.getAll().then(blogs => {
         blogs.sort((a, b) => b.likes - a.likes);
-        debugger;
-        setBlogs(blogs)
+
+        setBlogs(blogs);
       })
         .catch(error => {
           console.log(error);
           setErrorMessage(`Error requesting blogposts: ${error.message}`);
           setTimeout(() => {
-            setErrorMessage(null)
-          }, 5000)
-        })
+            setErrorMessage(null);
+          }, 5000);
+        });
     }
   }, [user]);
 
   useEffect(() => {
-    let loggedUser = window.localStorage.getItem("loggedBlogpostAppUser");
+    let loggedUser = window.localStorage.getItem('loggedBlogpostAppUser');
     if (loggedUser) {
       loggedUser = JSON.parse(loggedUser);
       blogService.setToken(loggedUser.token);
       setUser(loggedUser);
     }
-  }, [])
+  }, []);
 
   const handleLogin = async (event) => {
     event.preventDefault();
@@ -47,19 +47,19 @@ const App = () => {
     try {
       const user = await loginService.login({
         username, password,
-      })
+      });
       window.localStorage.setItem('loggedBlogpostAppUser', JSON.stringify(user));
       blogService.setToken(user.token);
-      setUser(user)
-      setUsername('')
-      setPassword('')
+      setUser(user);
+      setUsername('');
+      setPassword('');
     } catch (exception) {
-      setErrorMessage('Wrong credentials')
+      setErrorMessage('Wrong credentials');
       setTimeout(() => {
-        setErrorMessage(null)
+        setErrorMessage(null);
       }, 5000);
     }
-  }
+  };
 
   const loginForm = () => (
     <>
@@ -86,19 +86,19 @@ const App = () => {
         <button type="submit" onClick={handleLogin}>login</button>
       </form>
     </>
-  )
+  );
 
   const logOut = () => {
-    window.localStorage.removeItem("loggedBlogpostAppUser");
+    window.localStorage.removeItem('loggedBlogpostAppUser');
     blogService.setToken(null);
     location.reload();
-  }
+  };
 
   const cleanup = () => {
-    document.getElementById('title').value = "";
-    document.getElementById('author').value = "";
-    document.getElementById('url').value = "";
-  }
+    document.getElementById('title').value = '';
+    document.getElementById('author').value = '';
+    document.getElementById('url').value = '';
+  };
 
   const newBlogpostHandler = (event) => {
     event.preventDefault();
@@ -115,12 +115,12 @@ const App = () => {
         const newBlogpostsArray = [...blogs];
         newBlogpostObject.id = response.data.id;
         newBlogpostsArray.push(newBlogpostObject);
-        setSuccessMessage("Blogpost created succesfully!");
+        setSuccessMessage('Blogpost created succesfully!');
         cleanup();
         setBlogs(newBlogpostsArray);
-        blogpostFormRef.current.toggleVisibility()
+        blogpostFormRef.current.toggleVisibility();
         setTimeout(() => {
-          setSuccessMessage(null)
+          setSuccessMessage(null);
         }, 5000);
 
         // now gotta add the new blogpost locally
@@ -130,10 +130,10 @@ const App = () => {
       .catch(exception => {
         setErrorMessage(`Error creating blogpost: ${exception.response.data.error ? exception.response.data.error : exception.message}`);
         setTimeout(() => {
-          setErrorMessage(null)
+          setErrorMessage(null);
         }, 5000);
-      })
-  }
+      });
+  };
 
   const updateThisBlogpost = (updatedBlogpost) => {
     const desiredBlogIndex = blogs.findIndex(blog => blog.id === updatedBlogpost.id);
@@ -141,28 +141,28 @@ const App = () => {
     newBlogpostsArray[desiredBlogIndex] = updatedBlogpost;
     setBlogs(newBlogpostsArray);
 
-  }
+  };
 
   const removeThisBlogpost = (removedBlogpostId) => {
     const updatedBlogposts = [...blogs];
     const removedBpIndex = blogs.findIndex(blog => blog.id === removedBlogpostId);
     updatedBlogposts.splice(removedBpIndex, 1);
     setBlogs(updatedBlogposts);
-  }
+  };
 
   const successMessageAlert = (message) => {
     setSuccessMessage(message);
     setTimeout(() => {
-      setSuccessMessage(null)
+      setSuccessMessage(null);
     }, 5000);
-  }
+  };
 
   const errorMessageAlert = (message) => {
     setErrorMessage(message);
     setTimeout(() => {
-      setErrorMessage(null)
+      setErrorMessage(null);
     }, 5000);
-  }
+  };
 
   const loggedInuser = () => {
     return (
@@ -174,31 +174,31 @@ const App = () => {
         <Form createBlogpost={newBlogpostHandler} reference={blogpostFormRef} />
         {
           blogs.map(blog => {
-            return <Blog key={blog.id} blog={blog} updateThisBlogpost={updateThisBlogpost} removeThisBlogpost={removeThisBlogpost} errorMessageAlert={errorMessageAlert} successMessageAlert={successMessageAlert} />
+            return <Blog key={blog.id} blog={blog} updateThisBlogpost={updateThisBlogpost} removeThisBlogpost={removeThisBlogpost} errorMessageAlert={errorMessageAlert} successMessageAlert={successMessageAlert} />;
           }
           )
         }
       </>
-    )
-  }
+    );
+  };
   return (
     <>
       {user && loggedInuser()}
       {!user && loginForm()}
     </>
-  )
-}
+  );
+};
 
-export default App
+export default App;
 
 const Notification = ({ message, type }) => {
   if (message === null) {
-    return null
+    return null;
   }
 
   return (
     <div className={type}>
       {message}
     </div>
-  )
-}
+  );
+};

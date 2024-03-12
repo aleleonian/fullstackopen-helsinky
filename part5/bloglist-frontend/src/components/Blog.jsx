@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState } from 'react';
 import blogService from '../services/blogs';
 
 const Blog = ({ blog, updateThisBlogpost, removeThisBlogpost, errorMessageAlert, successMessageAlert }) => {
@@ -6,20 +6,20 @@ const Blog = ({ blog, updateThisBlogpost, removeThisBlogpost, errorMessageAlert,
 
   const toggleShowInfo = () => {
     setDisplayInfo(!displayInfo);
-  }
+  };
   const increaseLikes = (blogObj) => {
     blogService.update(blogObj)
       .then((response) => {
-        const updatedBlogpost = response.data;
-        updateThisBlogpost(updatedBlogpost);
+        blogObj.likes = response.data.likes;
+        updateThisBlogpost(blogObj);
       })
       .catch((error) => {
         errorMessageAlert(error.response.data.error ? error.response.data.error : error.message);
         setTimeout(() => {
-          errorMessageAlert(null)
+          errorMessageAlert(null);
         }, 5000);
-      })
-  }
+      });
+  };
   const removeBlogPost = (blogpost) => {
     if (confirm(`Do you really want to delete blogpost "${blogpost.title}"`)) {
       blogService.remove(blogpost)
@@ -28,14 +28,14 @@ const Blog = ({ blog, updateThisBlogpost, removeThisBlogpost, errorMessageAlert,
           successMessageAlert('Blogpost removed allright!');
         })
         .catch((error) => {
-          debugger;
+
           errorMessageAlert(error.response.data ? error.response.data : error.message);
           setTimeout(() => {
-            errorMessageAlert(null)
+            errorMessageAlert(null);
           }, 5000);
-        })
+        });
     }
-  }
+  };
 
   const blogStyle = {
     paddingTop: 10,
@@ -43,12 +43,13 @@ const Blog = ({ blog, updateThisBlogpost, removeThisBlogpost, errorMessageAlert,
     border: 'solid',
     borderWidth: 1,
     marginBottom: 5
-  }
+  };
 
-  let loggedUser = window.localStorage.getItem("loggedBlogpostAppUser");
+  let loggedUser = window.localStorage.getItem('loggedBlogpostAppUser');
+
   return (
     <div style={blogStyle}>
-      {blog.title} <button onClick={toggleShowInfo}>{!displayInfo ? "view" : "hide"}</button>
+      {blog.title} <button onClick={toggleShowInfo}>{!displayInfo ? 'view' : 'hide'}</button>
       {displayInfo &&
         <>
           <div>{blog.url}</div>
@@ -60,8 +61,8 @@ const Blog = ({ blog, updateThisBlogpost, removeThisBlogpost, errorMessageAlert,
         </>
       }
     </div>
-  )
-}
+  );
+};
 
 
-export default Blog
+export default Blog;
