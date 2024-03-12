@@ -1,9 +1,7 @@
+/* eslint-disable no-underscore-dangle */
 const mongoose = require('mongoose');
 
 const blogRouter = require('express').Router();
-
-// eslint-disable-next-line import/no-extraneous-dependencies
-const jwt = require('jsonwebtoken');
 
 const Blogpost = require('../models/blogpost');
 
@@ -15,28 +13,14 @@ blogRouter.get('/', async (request, response) => {
 });
 
 blogRouter.post('/', async (request, response, next) => {
-  let decodedToken;
-  try {
-    decodedToken = jwt.verify(request.token, process.env.SECRET);
-    if (!decodedToken.id) {
-      return response.status(401).json({ error: 'token invalid' });
-    }
-  } catch (error) {
-    return response.status(401).json({ error: 'token invalid' });
-  }
-
-  const user = await User.findById(decodedToken.id);
+  const user = await User.findById(request.userId);
 
   const newBlogPost = request.body;
-
 
   // should not this be user._id?
   newBlogPost.user = user.id;
 
   const blog = new Blogpost(newBlogPost);
-
-  // if (!blog.title) return response.status(400).json({ error: 'please check the title and url!' });
-  // if (!blog.title || !blog.url) return response.status(400).json({ error: 'please check the title and url!' });
 
   if (!blog.likes) blog.likes = 0;
   let savedBlogpost;
@@ -55,10 +39,6 @@ blogRouter.post('/', async (request, response, next) => {
 });
 
 blogRouter.delete('/:id', async (request, response) => {
-  if (!request.userId) {
-    return response.status(401).json({ error: 'token invalid' });
-  }
-
   const isValidObjectId = mongoose.Types.ObjectId.isValid(request.params.id);
 
   let objectId;
@@ -94,14 +74,16 @@ blogRouter.delete('/:id', async (request, response) => {
   return response.status(204).json('document deleted successfully!');
 });
 
-blogRouter.put('/:id', async (request, response) => {
-  const { body } = request.body;
+blogRouter.put('/:id', async (request, response, next) => {
+  const { body } = request;
+
+  console.log('body->', JSON.stringify(body));
 
   const blogPost = {
     title: body.title,
     author: body.author,
     url: body.url,
-    likes: body.likes,
+    likes: body.likes + 1,
   };
 
   try {
@@ -112,7 +94,7 @@ blogRouter.put('/:id', async (request, response) => {
     );
     response.json(updatedBlogpost);
   } catch (error) {
-    response.status(400).json(error);
+    next(error);
     // eslint-disable-next-line no-console
     console.log(error);
   }

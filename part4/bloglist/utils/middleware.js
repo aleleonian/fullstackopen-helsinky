@@ -14,6 +14,8 @@ const errorHandler = (error, request, response, next) => {
     return response.status(400).json({ error: 'expected `username` to be unique' });
   } if (error.name === 'MissingTokenError' && error.message.includes('Bro, you need an auth token to do this.')) {
     return response.status(400).json({ error: error.message });
+  } if (error.name === 'InvalidTokenError') {
+    return response.status(400).json({ error: error.message });
   }
 
   return next(error);
@@ -35,12 +37,18 @@ const tokenExtractor = (request, response, next) => {
 
 const userExtractor = (request, response, next) => {
   if (!request.token) {
-    const missingTokenError = new Error('No token?');
+    const missingTokenError = new Error();
     missingTokenError.name = 'MissingTokenError';
     missingTokenError.message = 'Bro, you need an auth token to do this.'; // You can add custom properties as well
     next(missingTokenError);
   }
   const decodedToken = jwt.verify(request.token, process.env.SECRET);
+  if (!decodedToken.id) {
+    const InvalidTokenError = new Error();
+    InvalidTokenError.name = 'InvalidTokenError';
+    InvalidTokenError.message = 'Bro, your token is invalid.'; // You can add custom properties as well
+    next(InvalidTokenError);
+  }
   request.userId = decodedToken.id;
   return next();
 };
