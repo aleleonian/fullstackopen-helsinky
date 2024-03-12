@@ -19,6 +19,7 @@ const App = () => {
     if (user !== null) {
       blogService.getAll().then(blogs => {
         blogs.sort((a, b) => b.likes - a.likes);
+        debugger;
         setBlogs(blogs)
       })
         .catch(error => {
@@ -134,13 +135,35 @@ const App = () => {
       })
   }
 
-  const updateBlogposts = (updatedBlogpost) => {
+  const updateThisBlogpost = (updatedBlogpost) => {
     const desiredBlogIndex = blogs.findIndex(blog => blog.id === updatedBlogpost.id);
     const newBlogpostsArray = [...blogs];
     newBlogpostsArray[desiredBlogIndex] = updatedBlogpost;
     setBlogs(newBlogpostsArray);
 
   }
+
+  const removeThisBlogpost = (removedBlogpostId) => {
+    const updatedBlogposts = [...blogs];
+    const removedBpIndex = blogs.findIndex(blog => blog.id === removedBlogpostId);
+    updatedBlogposts.splice(removedBpIndex, 1);
+    setBlogs(updatedBlogposts);
+  }
+
+  const successMessageAlert = (message) => {
+    setSuccessMessage(message);
+    setTimeout(() => {
+      setSuccessMessage(null)
+    }, 5000);
+  }
+
+  const errorMessageAlert = (message) => {
+    setErrorMessage(message);
+    setTimeout(() => {
+      setErrorMessage(null)
+    }, 5000);
+  }
+
   const loggedInuser = () => {
     return (
       <>
@@ -151,7 +174,7 @@ const App = () => {
         <Form createBlogpost={newBlogpostHandler} reference={blogpostFormRef} />
         {
           blogs.map(blog => {
-            return <Blog key={blog.id} blog={blog} updateBlogposts={updateBlogposts} errorMessageAlert={setErrorMessage} />
+            return <Blog key={blog.id} blog={blog} updateThisBlogpost={updateThisBlogpost} removeThisBlogpost={removeThisBlogpost} errorMessageAlert={errorMessageAlert} successMessageAlert={successMessageAlert} />
           }
           )
         }
