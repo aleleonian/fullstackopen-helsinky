@@ -102,7 +102,7 @@ const App = () => {
 
   const newBlogpostHandler = (event) => {
     event.preventDefault();
-    const formData = new FormData(document.getElementById('newBlogpost'));
+    const formData = new FormData(event.target);
 
     const newBlogpostObject = {};
 
@@ -164,6 +164,20 @@ const App = () => {
     }, 5000);
   };
 
+  const increaseLikes = (blogObj) => {
+    blogService.update(blogObj)
+      .then((response) => {
+        blogObj.likes = response.data.likes;
+        updateThisBlogpost(blogObj);
+      })
+      .catch((error) => {
+        errorMessageAlert(error.response.data.error ? error.response.data.error : error.message);
+        setTimeout(() => {
+          errorMessageAlert(null);
+        }, 5000);
+      });
+  };
+
   const loggedInuser = () => {
     return (
       <>
@@ -174,7 +188,7 @@ const App = () => {
         <Form createBlogpost={newBlogpostHandler} reference={blogpostFormRef} />
         {
           blogs.map(blog => {
-            return <Blog key={blog.id} blog={blog} updateThisBlogpost={updateThisBlogpost} removeThisBlogpost={removeThisBlogpost} errorMessageAlert={errorMessageAlert} successMessageAlert={successMessageAlert} />;
+            return <Blog key={blog.id} blog={blog} increaseLikes={increaseLikes} updateThisBlogpost={updateThisBlogpost} removeThisBlogpost={removeThisBlogpost} errorMessageAlert={errorMessageAlert} successMessageAlert={successMessageAlert} />;
           }
           )
         }

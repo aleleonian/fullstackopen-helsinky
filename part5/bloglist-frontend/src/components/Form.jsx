@@ -7,7 +7,7 @@ export const Form = ({ createBlogpost, reference }) => {
       <Togglable buttonLabel="Add new blogpost" ref={reference}>
         <div>
           <h2>Create a new blogpost</h2>
-          <form id="newBlogpost">
+          <form onSubmit={createBlogpost} id="newBlogpost">
             <div>
                             title: <input id="title" name="title" />
             </div>
@@ -18,7 +18,7 @@ export const Form = ({ createBlogpost, reference }) => {
                             url: <input id="url" name="url" />
             </div>
             <div>
-              <button onClick={createBlogpost}>create</button>
+              <button type="submit">create</button>
             </div>
           </form>
         </div>
