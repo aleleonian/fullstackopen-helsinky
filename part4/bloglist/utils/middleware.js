@@ -2,6 +2,7 @@
 const jwt = require('jsonwebtoken');
 
 const unknownEndpoint = (request, response) => {
+  console.log('url->', request.url);
   response.status(404).send({ error: 'unknown endpoint' });
 };
 

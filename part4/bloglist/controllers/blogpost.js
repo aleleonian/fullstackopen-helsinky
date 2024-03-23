@@ -28,13 +28,13 @@ blogRouter.post('/', async (request, response, next) => {
     savedBlogpost = await blog.save();
     user.blogposts = user.blogposts.concat(savedBlogpost._id);
   } catch (error) {
-    return (next(error));
+    return next(error);
   }
   try {
     await user.save();
     return response.status(201).json(savedBlogpost);
   } catch (error) {
-    return (next(error));
+    return next(error);
   }
 });
 
@@ -65,10 +65,14 @@ blogRouter.delete('/:id', async (request, response) => {
         console.log('Document not found');
       }
     } else {
-      return response.status(401).json({ error: 'Documents can only be deleted by owners.' });
+      return response
+        .status(401)
+        .json({ error: 'Documents can only be deleted by owners.' });
     }
   } catch (error) {
-    return response.status(401).send(`Error deleting document:${error.message}`);
+    return response
+      .status(401)
+      .send(`Error deleting document:${error.message}`);
   }
 
   return response.status(204).json('document deleted successfully!');
@@ -99,4 +103,5 @@ blogRouter.put('/:id', async (request, response, next) => {
     console.log(error);
   }
 });
+
 module.exports = blogRouter;

@@ -17,12 +17,14 @@ const App = () => {
 
   useEffect(() => {
     if (user !== null) {
-      blogService.getAll().then(blogs => {
-        blogs.sort((a, b) => b.likes - a.likes);
+      blogService
+        .getAll()
+        .then((blogs) => {
+          blogs.sort((a, b) => b.likes - a.likes);
 
-        setBlogs(blogs);
-      })
-        .catch(error => {
+          setBlogs(blogs);
+        })
+        .catch((error) => {
           console.log(error);
           setErrorMessage(`Error requesting blogposts: ${error.message}`);
           setTimeout(() => {
@@ -43,12 +45,15 @@ const App = () => {
 
   const handleLogin = async (event) => {
     event.preventDefault();
-
     try {
       const user = await loginService.login({
-        username, password,
+        username,
+        password,
       });
-      window.localStorage.setItem('loggedBlogpostAppUser', JSON.stringify(user));
+      window.localStorage.setItem(
+        'loggedBlogpostAppUser',
+        JSON.stringify(user)
+      );
       blogService.setToken(user.token);
       setUser(user);
       setUsername('');
@@ -71,6 +76,7 @@ const App = () => {
             type="text"
             value={username}
             name="Username"
+            data-testid="username"
             onChange={({ target }) => setUsername(target.value)}
           />
         </div>
@@ -80,11 +86,15 @@ const App = () => {
             type="password"
             value={password}
             name="Password"
+            data-testid='password'
             onChange={({ target }) => setPassword(target.value)}
           />
         </div>
-        <button type="submit" onClick={handleLogin}>login</button>
+        <button type="submit" onClick={handleLogin}>
+          login
+        </button>
       </form>
+      {errorMessage && <Notification message={errorMessage} type="error" />}
     </>
   );
 
@@ -110,7 +120,8 @@ const App = () => {
       newBlogpostObject[key] = value;
     }
 
-    blogService.create(newBlogpostObject)
+    blogService
+      .create(newBlogpostObject)
       .then((response) => {
         const newBlogpostsArray = [...blogs];
         newBlogpostObject.id = response.data.id;
@@ -125,10 +136,15 @@ const App = () => {
 
         // now gotta add the new blogpost locally
         // by making a new object from what was returned
-
       })
-      .catch(exception => {
-        setErrorMessage(`Error creating blogpost: ${exception.response.data.error ? exception.response.data.error : exception.message}`);
+      .catch((exception) => {
+        setErrorMessage(
+          `Error creating blogpost: ${
+            exception.response.data.error
+              ? exception.response.data.error
+              : exception.message
+          }`
+        );
         setTimeout(() => {
           setErrorMessage(null);
         }, 5000);
@@ -136,16 +152,19 @@ const App = () => {
   };
 
   const updateThisBlogpost = (updatedBlogpost) => {
-    const desiredBlogIndex = blogs.findIndex(blog => blog.id === updatedBlogpost.id);
+    const desiredBlogIndex = blogs.findIndex(
+      (blog) => blog.id === updatedBlogpost.id
+    );
     const newBlogpostsArray = [...blogs];
     newBlogpostsArray[desiredBlogIndex] = updatedBlogpost;
     setBlogs(newBlogpostsArray);
-
   };
 
   const removeThisBlogpost = (removedBlogpostId) => {
     const updatedBlogposts = [...blogs];
-    const removedBpIndex = blogs.findIndex(blog => blog.id === removedBlogpostId);
+    const removedBpIndex = blogs.findIndex(
+      (blog) => blog.id === removedBlogpostId
+    );
     updatedBlogposts.splice(removedBpIndex, 1);
     setBlogs(updatedBlogposts);
   };
@@ -165,13 +184,16 @@ const App = () => {
   };
 
   const increaseLikes = (blogObj) => {
-    blogService.update(blogObj)
+    blogService
+      .update(blogObj)
       .then((response) => {
         blogObj.likes = response.data.likes;
         updateThisBlogpost(blogObj);
       })
       .catch((error) => {
-        errorMessageAlert(error.response.data.error ? error.response.data.error : error.message);
+        errorMessageAlert(
+          error.response.data.error ? error.response.data.error : error.message
+        );
         setTimeout(() => {
           errorMessageAlert(null);
         }, 5000);
@@ -186,12 +208,19 @@ const App = () => {
         <h2>blogs</h2>
         {user.name} is logged in <button onClick={logOut}>log out</button>
         <Form createBlogpost={newBlogpostHandler} reference={blogpostFormRef} />
-        {
-          blogs.map(blog => {
-            return <Blog key={blog.id} blog={blog} increaseLikes={increaseLikes} updateThisBlogpost={updateThisBlogpost} removeThisBlogpost={removeThisBlogpost} errorMessageAlert={errorMessageAlert} successMessageAlert={successMessageAlert} />;
-          }
-          )
-        }
+        {blogs.map((blog) => {
+          return (
+            <Blog
+              key={blog.id}
+              blog={blog}
+              increaseLikes={increaseLikes}
+              updateThisBlogpost={updateThisBlogpost}
+              removeThisBlogpost={removeThisBlogpost}
+              errorMessageAlert={errorMessageAlert}
+              successMessageAlert={successMessageAlert}
+            />
+          );
+        })}
       </>
     );
   };
@@ -210,9 +239,5 @@ const Notification = ({ message, type }) => {
     return null;
   }
 
-  return (
-    <div className={type}>
-      {message}
-    </div>
-  );
+  return <div className={type}>{message}</div>;
 };
