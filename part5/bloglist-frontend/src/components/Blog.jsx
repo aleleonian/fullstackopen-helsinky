@@ -10,14 +10,15 @@ const Blog = ({ blog, increaseLikes, removeThisBlogpost, errorMessageAlert, succ
 
   const removeBlogPost = (blogpost) => {
     if (confirm(`Do you really want to delete blogpost "${blogpost.title}"`)) {
+      debugger;
       blogService.remove(blogpost)
         .then((response) => {
           removeThisBlogpost(blogpost.id);
           successMessageAlert('Blogpost removed allright!');
         })
         .catch((error) => {
-
-          errorMessageAlert(error.response.data ? error.response.data : error.message);
+          debugger;
+          errorMessageAlert(error.response.data ? error.response.data.error : error.message);
           setTimeout(() => {
             errorMessageAlert(null);
           }, 5000);
@@ -44,7 +45,7 @@ const Blog = ({ blog, increaseLikes, removeThisBlogpost, errorMessageAlert, succ
           <div>{blog.likes} <button data-testid="like-button" onClick={() => increaseLikes(blog)}>like</button></div>
           <div>{blog.author}</div>
           {loggedUser && JSON.parse(loggedUser).username === blog.user.username &&
-            <div><button onClick={() => removeBlogPost(blog)}>remove</button></div>
+            <div><button data-testid="remove-button" onClick={() => removeBlogPost(blog)}>remove</button></div>
           }
         </>
       }
