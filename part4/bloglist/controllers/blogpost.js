@@ -1,20 +1,26 @@
 /* eslint-disable no-underscore-dangle */
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
-const blogRouter = require('express').Router();
+const blogRouter = require("express").Router();
 
-const Blogpost = require('../models/blogpost');
+const Blogpost = require("../models/blogpost");
 
-const User = require('../models/user');
+const User = require("../models/user");
 
-blogRouter.get('/', async (request, response) => {
-  const blogPosts = await Blogpost.find({}).populate('user');
+blogRouter.get("/", async (request, response) => {
+  const blogPosts = await Blogpost.find({}).populate("user");
   response.json(blogPosts);
 });
 
-blogRouter.post('/', async (request, response, next) => {
+blogRouter.post("/", async (request, response, next) => {
   const user = await User.findById(request.userId);
 
+  if (!user) {
+    const missingTokenError = new Error();
+    missingTokenError.name = "InvalidUserError";
+    missingTokenError.message = "Bro, could not find user with that id."; // You can add custom properties as well
+    return next(missingTokenError);
+  }
   const newBlogPost = request.body;
 
   // should not this be user._id?
@@ -38,7 +44,7 @@ blogRouter.post('/', async (request, response, next) => {
   }
 });
 
-blogRouter.delete('/:id', async (request, response) => {
+blogRouter.delete("/:id", async (request, response) => {
   const isValidObjectId = mongoose.Types.ObjectId.isValid(request.params.id);
 
   let objectId;
@@ -47,7 +53,7 @@ blogRouter.delete('/:id', async (request, response) => {
     objectId = new mongoose.Types.ObjectId(request.params.id);
   } else {
     // eslint-disable-next-line no-console
-    console.error('Invalid ObjectId format');
+    console.error("Invalid ObjectId format");
     return response.status(400).end();
   }
 
@@ -59,15 +65,15 @@ blogRouter.delete('/:id', async (request, response) => {
 
       if (deletedDocument) {
         // eslint-disable-next-line no-console
-        console.log('Document deleted successfully:', deletedDocument);
+        console.log("Document deleted successfully:", deletedDocument);
       } else {
         // eslint-disable-next-line no-console
-        console.log('Document not found');
+        console.log("Document not found");
       }
     } else {
       return response
         .status(401)
-        .json({ error: 'Documents can only be deleted by owners.' });
+        .json({ error: "Documents can only be deleted by owners." });
     }
   } catch (error) {
     return response
@@ -75,26 +81,29 @@ blogRouter.delete('/:id', async (request, response) => {
       .send(`Error deleting document:${error.message}`);
   }
 
-  return response.status(204).json('document deleted successfully!');
+  return response.status(204).json("document deleted successfully!");
 });
 
-blogRouter.put('/:id', async (request, response, next) => {
+blogRouter.put("/:id", async (request, response, next) => {
   const { body } = request;
 
-  console.log('body->', JSON.stringify(body));
+  console.log("body->", JSON.stringify(body));
+  console.log("request.params.id->", request.params.id);
 
   const blogPost = {
     title: body.title,
     author: body.author,
     url: body.url,
-    likes: body.likes + 1,
+    likes: body.likes ? body.likes + 1 : 1,
   };
+
+  console.log("blogPost->", JSON.stringify(blogPost));
 
   try {
     const updatedBlogpost = await Blogpost.findByIdAndUpdate(
       request.params.id,
       blogPost,
-      { new: true },
+      { new: true }
     );
     response.json(updatedBlogpost);
   } catch (error) {

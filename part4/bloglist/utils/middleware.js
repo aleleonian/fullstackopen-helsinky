@@ -2,7 +2,7 @@
 const jwt = require('jsonwebtoken');
 
 const unknownEndpoint = (request, response) => {
-  console.log('url->', request.url);
+  console.log('unknown endpoint ->', request.url);
   response.status(404).send({ error: 'unknown endpoint' });
 };
 
@@ -16,6 +16,8 @@ const errorHandler = (error, request, response, next) => {
   } if (error.name === 'MissingTokenError' && error.message.includes('Bro, you need an auth token to do this.')) {
     return response.status(400).json({ error: error.message });
   } if (error.name === 'InvalidTokenError') {
+    return response.status(400).json({ error: error.message });
+  } if (error.name === 'InvalidUserError') {
     return response.status(400).json({ error: error.message });
   }
 
