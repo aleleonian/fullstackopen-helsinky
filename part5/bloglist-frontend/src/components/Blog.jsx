@@ -3,7 +3,7 @@ import blogService from '../services/blogs';
 
 const Blog = ({ blog, increaseLikes, removeThisBlogpost, errorMessageAlert, successMessageAlert }) => {
   const [displayInfo, setDisplayInfo] = useState(false);
-
+  
   const toggleShowInfo = () => {
     setDisplayInfo(!displayInfo);
   };
@@ -37,11 +37,11 @@ const Blog = ({ blog, increaseLikes, removeThisBlogpost, errorMessageAlert, succ
 
   return (
     <div className='Blog' style={blogStyle}>
-      {blog.title} <button onClick={toggleShowInfo}>{!displayInfo ? 'view' : 'hide'}</button>
+      {blog.title} <button data-testid="view-hide-button" onClick={toggleShowInfo}>{!displayInfo ? 'view' : 'hide'}</button>
       {displayInfo &&
         <>
           <div>{blog.url}</div>
-          <div>{blog.likes} <button onClick={() => increaseLikes(blog)}>like</button></div>
+          <div>{blog.likes} <button data-testid="like-button" onClick={() => increaseLikes(blog)}>like</button></div>
           <div>{blog.author}</div>
           {loggedUser && JSON.parse(loggedUser).username === blog.user.username &&
             <div><button onClick={() => removeBlogPost(blog)}>remove</button></div>
