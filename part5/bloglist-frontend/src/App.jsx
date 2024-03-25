@@ -1,14 +1,14 @@
-import { useState, useEffect, useRef } from "react";
-import blogService from "./services/blogs";
-import loginService from "./services/login";
-import Blog from "./components/Blog";
-import { Form } from "./components/Form";
-import "./assets/App.css";
+import { useState, useEffect, useRef } from 'react';
+import blogService from './services/blogs';
+import loginService from './services/login';
+import Blog from './components/Blog';
+import { Form } from './components/Form';
+import './assets/App.css';
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const [user, setUser] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
@@ -35,7 +35,7 @@ const App = () => {
   }, [user]);
 
   useEffect(() => {
-    let loggedUser = window.localStorage.getItem("loggedBlogpostAppUser");
+    let loggedUser = window.localStorage.getItem('loggedBlogpostAppUser');
     if (loggedUser) {
       loggedUser = JSON.parse(loggedUser);
       blogService.setToken(loggedUser.token);
@@ -51,15 +51,15 @@ const App = () => {
         password,
       });
       window.localStorage.setItem(
-        "loggedBlogpostAppUser",
+        'loggedBlogpostAppUser',
         JSON.stringify(user)
       );
       blogService.setToken(user.token);
       setUser(user);
-      setUsername("");
-      setPassword("");
+      setUsername('');
+      setPassword('');
     } catch (exception) {
-      setErrorMessage("Wrong credentials");
+      setErrorMessage('Wrong credentials');
       setTimeout(() => {
         setErrorMessage(null);
       }, 5000);
@@ -99,15 +99,15 @@ const App = () => {
   );
 
   const logOut = () => {
-    window.localStorage.removeItem("loggedBlogpostAppUser");
+    window.localStorage.removeItem('loggedBlogpostAppUser');
     blogService.setToken(null);
     location.reload();
   };
 
   const cleanup = () => {
-    document.getElementById("title").value = "";
-    document.getElementById("author").value = "";
-    document.getElementById("url").value = "";
+    document.getElementById('title').value = '';
+    document.getElementById('author').value = '';
+    document.getElementById('url').value = '';
   };
 
   const newBlogpostHandler = (event) => {
@@ -119,15 +119,15 @@ const App = () => {
     for (const [key, value] of formData.entries()) {
       newBlogpostObject[key] = value;
     }
-debugger;
+
     blogService
       .create(newBlogpostObject)
       .then((response) => {
-        debugger;
+
         const newBlogpostsArray = [...blogs];
         newBlogpostObject.id = response.data.id;
         const loggedUser = JSON.parse(
-          window.localStorage.getItem("loggedBlogpostAppUser")
+          window.localStorage.getItem('loggedBlogpostAppUser')
         );
         if (loggedUser) {
           newBlogpostObject.user = {};
@@ -136,7 +136,7 @@ debugger;
           newBlogpostObject.user.id = loggedUser.id;
         }
         newBlogpostsArray.push(newBlogpostObject);
-        setSuccessMessage("Blogpost created succesfully!");
+        setSuccessMessage('Blogpost created succesfully!');
         cleanup();
         setBlogs(newBlogpostsArray);
         blogpostFormRef.current.toggleVisibility();
@@ -148,7 +148,7 @@ debugger;
         // by making a new object from what was returned
       })
       .catch((exception) => {
-        debugger;
+
         setErrorMessage(
           `Error creating blogpost: ${
             exception.response.data.error

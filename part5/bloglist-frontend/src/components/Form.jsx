@@ -1,5 +1,5 @@
-import React from "react";
-import Togglable from "./Togglable";
+import React from 'react';
+import Togglable from './Togglable';
 
 export const Form = ({ createBlogpost, reference }) => {
   return (

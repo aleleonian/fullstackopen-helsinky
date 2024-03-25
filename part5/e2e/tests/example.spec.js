@@ -105,7 +105,7 @@ describe("Blog app", () => {
       // page.on("dialog", (dialog) => dialog.accept());
       page.on("dialog", async (dialog) => {
         console.log("Dialog message:", dialog.message());
-        debugger;
+        
         await dialog.accept(); // Accept the dialog
         // You can also use dialog.dismiss() to dismiss the dialog
       });

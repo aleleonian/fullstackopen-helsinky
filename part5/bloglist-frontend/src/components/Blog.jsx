@@ -16,7 +16,6 @@ const Blog = ({
 
   const removeBlogPost = (blogpost) => {
     if (confirm(`Do you really want to delete blogpost "${blogpost.title}"`)) {
-      debugger;
       blogService
         .remove(blogpost)
         .then((response) => {
@@ -24,7 +23,6 @@ const Blog = ({
           successMessageAlert('Blogpost removed allright!');
         })
         .catch((error) => {
-          debugger;
           errorMessageAlert(
             error.response.data ? error.response.data.error : error.message
           );
