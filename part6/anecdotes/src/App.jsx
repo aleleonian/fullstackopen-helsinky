@@ -28,10 +28,10 @@ const App = () => {
   }
 
   function mostVotedAnecdoteIndex() {
-    let mostVotedIndex;
+    let mostVotedIndex = -1;
     for (let i = 0; i < votes.length; i++) {
       if (votes[i] > 0) {
-        if (!mostVotedIndex) mostVotedIndex = i;
+        if (mostVotedIndex === -1) mostVotedIndex = i;
         else if (votes[i] > votes[mostVotedIndex]) mostVotedIndex = i;
       }
     }
@@ -47,7 +47,7 @@ const App = () => {
       <button onClick={voteForThisAnecdote}>Vote</button>
       <button onClick={selectRandomAnecdote}> Next Anecdote </button>
       <br />
-      {mostVotedAnecdoteIndex() ? <MostVotedAnecdote /> : ""}
+      {mostVotedAnecdoteIndex() != -1 ? <MostVotedAnecdote /> : ""}
     </div>
   );
 };
