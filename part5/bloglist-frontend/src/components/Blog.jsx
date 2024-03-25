@@ -1,9 +1,15 @@
 import { useState } from 'react';
 import blogService from '../services/blogs';
 
-const Blog = ({ blog, increaseLikes, removeThisBlogpost, errorMessageAlert, successMessageAlert }) => {
+const Blog = ({
+  blog,
+  increaseLikes,
+  removeThisBlogpost,
+  errorMessageAlert,
+  successMessageAlert,
+}) => {
   const [displayInfo, setDisplayInfo] = useState(false);
-  
+
   const toggleShowInfo = () => {
     setDisplayInfo(!displayInfo);
   };
@@ -11,14 +17,17 @@ const Blog = ({ blog, increaseLikes, removeThisBlogpost, errorMessageAlert, succ
   const removeBlogPost = (blogpost) => {
     if (confirm(`Do you really want to delete blogpost "${blogpost.title}"`)) {
       debugger;
-      blogService.remove(blogpost)
+      blogService
+        .remove(blogpost)
         .then((response) => {
           removeThisBlogpost(blogpost.id);
           successMessageAlert('Blogpost removed allright!');
         })
         .catch((error) => {
           debugger;
-          errorMessageAlert(error.response.data ? error.response.data.error : error.message);
+          errorMessageAlert(
+            error.response.data ? error.response.data.error : error.message
+          );
           setTimeout(() => {
             errorMessageAlert(null);
           }, 5000);
@@ -31,27 +40,45 @@ const Blog = ({ blog, increaseLikes, removeThisBlogpost, errorMessageAlert, succ
     paddingLeft: 2,
     border: 'solid',
     borderWidth: 1,
-    marginBottom: 5
+    marginBottom: 5,
   };
 
   let loggedUser = window.localStorage.getItem('loggedBlogpostAppUser');
 
   return (
-    <div className='Blog' style={blogStyle}>
-      {blog.title} <button data-testid="view-hide-button" onClick={toggleShowInfo}>{!displayInfo ? 'view' : 'hide'}</button>
-      {displayInfo &&
+    <div className="Blog" style={blogStyle}>
+      <div id="blogpost-title"> {blog.title}</div>{' '}
+      <button data-testid="view-hide-button" onClick={toggleShowInfo}>
+        {!displayInfo ? 'view' : 'hide'}
+      </button>
+      {displayInfo && (
         <>
           <div>{blog.url}</div>
-          <div>{blog.likes} <button data-testid="like-button" onClick={() => increaseLikes(blog)}>like</button></div>
+          <div>
+            {blog.likes}{' '}
+            <button
+              data-testid="like-button"
+              onClick={() => increaseLikes(blog)}
+            >
+              like
+            </button>
+          </div>
           <div>{blog.author}</div>
-          {loggedUser && JSON.parse(loggedUser).username === blog.user.username &&
-            <div><button data-testid="remove-button" onClick={() => removeBlogPost(blog)}>remove</button></div>
-          }
+          {loggedUser &&
+            JSON.parse(loggedUser).username === blog.user.username && (
+            <div>
+              <button
+                data-testid="remove-button"
+                onClick={() => removeBlogPost(blog)}
+              >
+                  remove
+              </button>
+            </div>
+          )}
         </>
-      }
+      )}
     </div>
   );
 };
-
 
 export default Blog;

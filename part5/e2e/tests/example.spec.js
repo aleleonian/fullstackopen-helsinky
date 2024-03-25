@@ -1,6 +1,8 @@
 const { test, describe, expect, beforeEach } = require("@playwright/test");
 const helper = require("./helper");
 const axios = require("axios");
+const { exec } = require("child_process");
+const exp = require("constants");
 
 const FIRST_USER_FULL_NAME = "Daniela Alzate";
 const FIRST_USER_USERNAME = "dalzate";
@@ -29,13 +31,6 @@ describe("Blog app", () => {
     const locator = await page.getByText("Login to application");
     await expect(locator).toBeVisible();
   });
-
-  // test.only("just a post", async ({ page }) => {
-  //   let result = await axios.post(BACKEND + "/api/testing/reset");
-  //   console.log("result->", result);
-  //   await page.goto("/");
-  //   console.log("ciulo");
-  // });
 
   describe("Login", () => {
     test("Fails with wrong credentials", async ({ page }) => {
@@ -130,7 +125,7 @@ describe("Blog app", () => {
       await page.getByTestId("remove-button").click();
       await expect(page.getByText("Blogpost removed allright!")).toBeVisible();
     });
-    test.only("Only the user who added the blog sees the blog's delete button.", async ({
+    test("Only the user who added the blog sees the blog's delete button.", async ({
       page,
     }) => {
       //let's create the second user
@@ -165,6 +160,67 @@ describe("Blog app", () => {
       await page.getByRole("button", { name: "view" }).click();
       await expect(page.getByText("Cacho Castañares")).toBeVisible();
       await expect(page.getByText("remove")).not.toBeVisible();
+    });
+    test("Ensure that the blogs are arranged in the order according to the likes, the blog with the most likes first.", async ({
+      page,
+    }) => {
+      //let's create a blogpost authored by the first user
+      await helper.createBlogPost(
+        page,
+        BLOGPOST_TITLE,
+        BLOGPOST_AUTHOR,
+        BLOGPOST_URL
+      );
+      await expect(
+        page.getByText("Blogpost created succesfully!")
+      ).toBeVisible();
+      await expect(page.getByText(BLOGPOST_TITLE)).toBeVisible();
+      //let's like 3 times the first blogpost
+      await page.getByRole("button", { name: "view" }).click();
+      await expect(page.getByText("Cacho Castañares")).toBeVisible();
+
+      for (let i = 0; i < 3; i++) await page.getByTestId("like-button").click();
+
+      //let's create another blogpost
+      await helper.createBlogPost(
+        page,
+        "Second blogpost title",
+        "Adrian Dargelos",
+        "www.google.com"
+      );
+      await expect(
+        page.getByText("Blogpost created succesfully!")
+      ).toBeVisible();
+      await expect(page.getByText("Second blogpost title")).toBeVisible();
+      // Select the second div with class "Blog"
+
+      // Select the second div with class "Blog"
+      const secondBlogDiv = (await page.$$(".Blog"))[1]; // Index 1 corresponds to the second div
+
+      // Within the second div, find the button with the label 'view' using a more conventional selector
+      const viewButton = await secondBlogDiv.$('button:has-text("view")');
+
+      // Within the second div, find the button with the label 'view'
+      await viewButton.click();
+
+      //like it 10 times
+      const likeButton = await secondBlogDiv.$('button:has-text("like")');
+      for (let i = 0; i < 10; i++) await likeButton.click();
+
+      // reload so the most viewed blogpost is on top of the list
+      //(maybe i should have done things so i needed not a reload?)
+      await page.reload();
+
+      await page.waitForSelector(".Blog");
+
+      const mostLikedBlogpostDiv = (await page.$$(".Blog"))[0];
+
+      const blogpostTitleText = await mostLikedBlogpostDiv.evaluate((div) => {
+        const blogpostTitle = div.querySelector("#blogpost-title");
+        return blogpostTitle ? blogpostTitle.textContent.trim() : null;
+      });
+
+      expect(await blogpostTitleText).toBe("Second blogpost title");
     });
   });
 });
