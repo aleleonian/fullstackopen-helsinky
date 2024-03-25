@@ -2,16 +2,9 @@ sequenceDiagram
     participant browser
     participant server
 
-    Note right of browser: The user fills the input field and clicks Save
-
-    browser->>server: POST https://studies.cs.helsinki.fi/exampleapp/new_note
+    browser->>server: GET https://studies.cs.helsinki.fi/exampleapp/spa
     activate server
-    server-->>browser: HTTP 302 Redirect
-    deactivate server
-
-    browser->>server: GET https://studies.cs.helsinki.fi/exampleapp/notes
-    activate server
-    server-->>browser: the HTML file
+    server-->>browser: HTML document
     deactivate server
 
     browser->>server: GET https://studies.cs.helsinki.fi/exampleapp/main.css
@@ -19,7 +12,7 @@ sequenceDiagram
     server-->>browser: the css file
     deactivate server
 
-    browser->>server: GET https://studies.cs.helsinki.fi/exampleapp/main.js
+    browser->>server: GET https://studies.cs.helsinki.fi/exampleapp/spa.js
     activate server
     server-->>browser: the JavaScript file
     deactivate server
