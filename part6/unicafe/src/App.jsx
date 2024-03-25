@@ -1,5 +1,5 @@
 import React from "react";
-import { store } from './store.jsx';
+import { useSelector, useDispatch } from 'react-redux'
 
 const generateAverage = (good, neutral, bad) => {
   if (good === 0 && bad === 0 && neutral === 0) return 0;
@@ -71,18 +71,21 @@ const Statistics = ({ good, neutral, bad }) => {
 };
 
 const App = () => {
-  const good = store.getState().good;
-  const neutral = store.getState().neutral;
-  const bad = store.getState().bad;
+  const dispatch = useDispatch()
+  const appState = useSelector(state => state)
+
+  const good = appState.good;
+  const neutral = appState.neutral;
+  const bad = appState.bad;
 
   const goodClickHandler = () => {
-    store.dispatch({ type: "GOOD" });
+    dispatch({ type: "GOOD" });
   };
   const neutralClickHandler = () => {
-    store.dispatch({ type: "NEUTRAL" });
+    dispatch({ type: "NEUTRAL" });
   };
   const badClickHandler = () => {
-    store.dispatch({ type: "BAD" });
+    dispatch({ type: "BAD" });
   };
 
   return (
