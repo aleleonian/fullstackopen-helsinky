@@ -13,8 +13,9 @@ blogRouter.get("/", async (request, response) => {
 });
 
 blogRouter.post("/", async (request, response, next) => {
-  const user = await User.findById(request.userId);
+  console.log("request.userId->", request.userId);
 
+  const user = await User.findById(request.userId);
   if (!user) {
     const missingTokenError = new Error();
     missingTokenError.name = "InvalidUserError";
