@@ -2,6 +2,18 @@ import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { createAnecdote } from "./reducers/anecdoteReducer";
 
+const AnecdoteForm = ({ handleSubmit }) => {
+  return (
+    <>
+      <h1>Add a new anecdote</h1>
+      <form onSubmit={handleSubmit}>
+        <input type="text" name="anecdote" placeholder="type your anecdote" />
+        <button type="submit">Add</button>
+      </form>
+    </>
+  );
+};
+
 const App = () => {
   const dispatch = useDispatch();
   const appState = useSelector((state) => state);
@@ -23,7 +35,6 @@ const App = () => {
       // Sort based on votes in descending order
       return b.votes - a.votes;
     });
-    
 
     return (
       <React.Fragment>
@@ -38,17 +49,6 @@ const App = () => {
         })}
       </React.Fragment>
     );
-  }
-
-  function mostVotedAnecdoteIndex() {
-    let mostVotedIndex = -1;
-    for (let i = 0; i < votes.length; i++) {
-      if (votes[i] > 0) {
-        if (mostVotedIndex === -1) mostVotedIndex = i;
-        else if (votes[i] > votes[mostVotedIndex]) mostVotedIndex = i;
-      }
-    }
-    return mostVotedIndex;
   }
 
   function anyAnecdoteVotedAlready() {
@@ -82,11 +82,7 @@ const App = () => {
       <button onClick={voteForThisAnecdote}>Vote</button>
       <button onClick={selectRandomAnecdote}> Next Anecdote </button>
       <br />
-      <h1>Add a new anecdote</h1>
-      <form onSubmit={addAnecdote}>
-        <input type="text" name="anecdote" placeholder="type your anecdote" />
-        <button type="submit">Add</button>
-      </form>
+      <AnecdoteForm handleSubmit={addAnecdote} />
       <br />
       {anyAnecdoteVotedAlready() ? <AnecdotesRanking /> : ""}
     </div>
