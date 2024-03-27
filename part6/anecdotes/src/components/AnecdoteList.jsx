@@ -6,8 +6,8 @@ export const AnecdoteList = () => {
   const dispatch = useDispatch();
 
   const appState = useSelector((state) => state);
-  const anecdotes = appState.anecdotes;
-  const selectedAnecdote = appState.selectedAnecdote;
+  const anecdotes = appState.anecdotes.anecdotes;
+  const selectedAnecdote = appState.anecdotes.selectedAnecdote;
 
   function selectRandomAnecdote() {
     const randomIndex = Math.floor(Math.random() * anecdotes.length);
