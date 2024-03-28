@@ -23,6 +23,7 @@ const filterSlice = createSlice({
   initialState,
   reducers: {
     createFilter(state, action) {
+      debugger;
       return action.payload;
     },
   },
