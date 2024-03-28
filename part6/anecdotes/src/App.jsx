@@ -1,7 +1,7 @@
 import React from "react";
 import { useDispatch } from "react-redux";
 import { createAnecdote } from "./reducers/anecdoteReducer";
-import { createFilter } from "./reducers/filterReducer";
+import { createFilter} from './reducers/filterReducer'
 import { AnecdoteList } from "./components/AnecdoteList";
 import { AnecdoteForm } from "./components/AnecdoteForm";
 import { AnecdoteFilter } from "./components/AnecdoteFilter";
