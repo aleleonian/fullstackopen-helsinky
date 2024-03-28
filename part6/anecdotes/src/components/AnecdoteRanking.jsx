@@ -6,7 +6,7 @@ export function AnecdoteRanking() {
   const appState = useSelector((state) => state);
   const anecdotes = appState.anecdotes.anecdotes;
   const arrayCopy = [...anecdotes];
-  const filter = appState.filter;
+  const filter = appState.filter.string;
   const sortedArray = arrayCopy.sort((a, b) => {
     return b.votes - a.votes;
   });

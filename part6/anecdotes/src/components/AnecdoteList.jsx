@@ -2,6 +2,7 @@ import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { AnecdoteRanking } from "./AnecdoteRanking";
 import { selectAnecdote, voteAnecdote} from '../reducers/anecdoteReducer';
+import { setNotificationMessage} from '../reducers/notificationReducer';
 
 export const AnecdoteList = () => {
   const dispatch = useDispatch();
@@ -12,12 +13,12 @@ export const AnecdoteList = () => {
 
   function selectRandomAnecdote() {
     const randomIndex = Math.floor(Math.random() * anecdotes.length);
-    // dispatch({ type: "SELECT", payload: randomIndex });
     dispatch(selectAnecdote(randomIndex));
   }
 
   function voteForThisAnecdote() {
     dispatch(voteAnecdote());
+    dispatch(setNotificationMessage(`You voted for '${anecdotes[selectedAnecdoteIndex].string}'`));
   }
 
   function anyAnecdoteVotedAlready() {
