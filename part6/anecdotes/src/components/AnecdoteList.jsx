@@ -1,21 +1,24 @@
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { AnecdoteRanking } from "./AnecdoteRanking";
+import { selectAnecdote, voteAnecdote} from '../reducers/anecdoteReducer';
+import { setNotificationMessage} from '../reducers/notificationReducer';
 
 export const AnecdoteList = () => {
   const dispatch = useDispatch();
 
   const appState = useSelector((state) => state);
-  const anecdotes = appState.anecdotes;
-  const selectedAnecdote = appState.selectedAnecdote;
+  const anecdotes = appState.anecdotes.anecdotes;
+  const selectedAnecdoteIndex = appState.anecdotes.selectedAnecdoteIndex;
 
   function selectRandomAnecdote() {
     const randomIndex = Math.floor(Math.random() * anecdotes.length);
-    dispatch({ type: "SELECT", payload: randomIndex });
+    dispatch(selectAnecdote(randomIndex));
   }
 
   function voteForThisAnecdote() {
-    dispatch({ type: "VOTE" });
+    dispatch(voteAnecdote());
+    dispatch(setNotificationMessage(`You voted for '${anecdotes[selectedAnecdoteIndex].string}'`));
   }
 
   function anyAnecdoteVotedAlready() {
@@ -28,9 +31,9 @@ export const AnecdoteList = () => {
   }
   return (
     <>
-      {anecdotes[selectedAnecdote].string}
+      {anecdotes[selectedAnecdoteIndex].string}
       <br />
-      Has {anecdotes[selectedAnecdote].votes} votes.
+      Has {anecdotes[selectedAnecdoteIndex].votes} votes.
       <br />
       <button onClick={voteForThisAnecdote}>Vote</button>
       <button onClick={selectRandomAnecdote}> Next Anecdote </button>

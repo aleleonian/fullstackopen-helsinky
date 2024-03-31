@@ -1,8 +1,12 @@
 import React from "react";
 import { useDispatch } from "react-redux";
 import { createAnecdote } from "./reducers/anecdoteReducer";
+import { setNotificationMessage } from "./reducers/notificationReducer";
+import { createFilter } from "./reducers/filterReducer";
 import { AnecdoteList } from "./components/AnecdoteList";
 import { AnecdoteForm } from "./components/AnecdoteForm";
+import { AnecdoteFilter } from "./components/AnecdoteFilter";
+import { Notification } from "./components/Notification";
 
 const App = () => {
   const dispatch = useDispatch();
@@ -15,13 +19,20 @@ const App = () => {
       return;
     }
     dispatch(createAnecdote(newAnecdote));
-    alert("Anecdote added!");
+    dispatch(setNotificationMessage("Anecdote added!"));
     event.target.anecdote.value = "";
+  };
+
+  const filterAnecdotes = (event) => {
+    const filterString = event.target.value;
+    dispatch(createFilter(filterString));
   };
 
   return (
     <div>
       <h1>Anecdote of the day</h1>
+      <AnecdoteFilter handleSubmit={filterAnecdotes} />
+      <Notification />
       <AnecdoteList />
       <AnecdoteForm handleSubmit={addAnecdote} />
     </div>
