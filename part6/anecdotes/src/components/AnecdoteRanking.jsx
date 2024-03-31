@@ -10,7 +10,6 @@ export function AnecdoteRanking() {
   const sortedArray = arrayCopy.sort((a, b) => {
     return b.votes - a.votes;
   });
-debugger;
   return (
     <React.Fragment>
       <h1>Anecdotes ranking</h1>

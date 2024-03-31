@@ -29,7 +29,6 @@ const App = () => {
       });
   }, []);
 
-  debugger;
   const appState = useSelector((state) => state);
   const anecdotes = appState.anecdotes.list;
   const selectedAnecdoteIndex = appState.anecdotes.selectedAnecdoteIndex;
@@ -42,6 +41,7 @@ const App = () => {
       return;
     }
     const newAnecdote = await anecdoteService.createNew(newAnecdoteStr);
+    newAnecdote.votes = 0;
     dispatch(createAnecdote(newAnecdote));
     dispatch(setNotificationMessage("Anecdote added!"));
     event.target.anecdote.value = "";
