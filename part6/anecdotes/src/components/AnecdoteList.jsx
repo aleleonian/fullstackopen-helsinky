@@ -8,7 +8,7 @@ export const AnecdoteList = () => {
   const dispatch = useDispatch();
 
   const appState = useSelector((state) => state);
-  const anecdotes = appState.anecdotes.anecdotes;
+  const anecdotes = appState.anecdotes.list;
   const selectedAnecdoteIndex = appState.anecdotes.selectedAnecdoteIndex;
 
   function selectRandomAnecdote() {
@@ -18,7 +18,7 @@ export const AnecdoteList = () => {
 
   function voteForThisAnecdote() {
     dispatch(voteAnecdote());
-    dispatch(setNotificationMessage(`You voted for '${anecdotes[selectedAnecdoteIndex].string}'`));
+    dispatch(setNotificationMessage(`You voted for '${anecdotes[selectedAnecdoteIndex].content}'`));
   }
 
   function anyAnecdoteVotedAlready() {
@@ -31,7 +31,7 @@ export const AnecdoteList = () => {
   }
   return (
     <>
-      {anecdotes[selectedAnecdoteIndex].string}
+      {anecdotes[selectedAnecdoteIndex].content}
       <br />
       Has {anecdotes[selectedAnecdoteIndex].votes} votes.
       <br />

@@ -4,22 +4,22 @@ import { useSelector } from "react-redux";
 export function AnecdoteRanking() {
 
   const appState = useSelector((state) => state);
-  const anecdotes = appState.anecdotes.anecdotes;
+  const anecdotes = appState.anecdotes.list;
   const arrayCopy = [...anecdotes];
-  const filter = appState.filter.string;
+  const filter = appState.filter.content;
   const sortedArray = arrayCopy.sort((a, b) => {
     return b.votes - a.votes;
   });
-
+debugger;
   return (
     <React.Fragment>
       <h1>Anecdotes ranking</h1>
       {sortedArray
-        .filter(item => item.string.includes(filter))
+        .filter(item => item.content.includes(filter))
         .map((item) => {
           return (
-            <div key={item.string}>
-              &apos;{item.string}&apos; -&gt; has{" "}
+            <div key={item.content}>
+              &apos;{item.content}&apos; -&gt; has{" "}
               {item.votes} votes
             </div>
           );

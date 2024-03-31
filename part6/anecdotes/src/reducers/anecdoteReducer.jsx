@@ -1,8 +1,9 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { anecdotes } from "../data/anecdotes";
+
+const list = [];
 
 const initialState = {
-  anecdotes,
+  list,
   selectedAnecdoteIndex: 0,
 };
 
@@ -11,17 +12,24 @@ const anecdotesSlice = createSlice({
   initialState,
   reducers: {
     createAnecdote(state, action) {
-      state.anecdotes.push({ string: action.payload, votes: 0 });
+      // state.list.push({ content: action.payload, votes: 0 });
+      state.list.push(action.payload);
     },
     selectAnecdote(state, action){
       const selectedAnecdoteIndex = action.payload;
       state.selectedAnecdoteIndex = selectedAnecdoteIndex;
     },
     voteAnecdote(state){
-      state.anecdotes[state.selectedAnecdoteIndex].votes++;
+      state.list[state.selectedAnecdoteIndex].votes++;
+    },
+    appendAnecdote(state, action) {
+      state.list.push(action.payload)
+    },
+    setAnecdotes(state, action){
+      state.list = action.payload;
     }
   },
 });
 
-export const { createAnecdote, selectAnecdote, voteAnecdote } = anecdotesSlice.actions;
+export const { createAnecdote, selectAnecdote, voteAnecdote, appendAnecdote, setAnecdotes } = anecdotesSlice.actions;
 export default anecdotesSlice.reducer;
