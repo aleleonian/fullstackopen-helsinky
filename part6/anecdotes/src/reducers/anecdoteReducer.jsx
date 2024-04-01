@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import anecdoteService from "../services/anecdotes";
-import { setNotificationMessage } from "./notificationReducer";
+import { setNotification } from "./notificationReducer";
 
 const list = [];
 
@@ -41,7 +41,7 @@ export const initializeAnecdotes = () => {
     } catch (error) {
       console.error("An error occurred while fetching anecdotes:", error);
       dispatch(
-        setNotificationMessage(
+        setNotification(
           `An error occurred while fetching anecdotes: ${error.message}`
         )
       );
@@ -54,10 +54,10 @@ export const createAnecdote = (content) => {
     try {
       const newAnecdote = await anecdoteService.createNew(content);
       dispatch(appendAnecdote(newAnecdote));
-      dispatch(setNotificationMessage("Anecdote added!"));
+      dispatch(setNotification("Anecdote added!", 5));
     } catch (error) {
       dispatch(
-        setNotificationMessage("Error adding new anecodte: ", error.message)
+        setNotification("Error adding new anecodte: ", error.message)
       );
     }
   };
@@ -69,10 +69,10 @@ export const voteForThisAnecdote = (anecdote) => {
       newAnecdote.votes += 1;
       const updatedAnecdote = await anecdoteService.update(newAnecdote);
       dispatch(voteAnecdote());
-      dispatch(setNotificationMessage(`You voted for '${anecdote.content}'`));
+      dispatch(setNotification(`You voted for '${anecdote.content}'`,5));
     } catch (error) {
       dispatch(
-        setNotificationMessage("Error upvoting anecodte: ", error.message)
+        setNotification("Error upvoting anecodte: ", error.message)
       );
     }
   };

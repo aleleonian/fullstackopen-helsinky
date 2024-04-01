@@ -7,6 +7,7 @@ export const Notification = () => {
   const dispatch = useDispatch();
   const appState = useSelector((state) => state);
   const notificationMessage = appState.notification.message;
+  const seconds = appState.notification.seconds;
   const style = {
     border: "solid",
     padding: 10,
@@ -15,7 +16,7 @@ export const Notification = () => {
   if (notificationMessage !== "" && notificationMessage) {
     setTimeout(() => {
       dispatch(removeNotificationMessage(""));
-    }, 5000);
+    }, seconds * 1000);
     return <div style={style}>{notificationMessage}</div>;
   } else return null;
 };

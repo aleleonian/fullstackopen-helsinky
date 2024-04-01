@@ -17,7 +17,7 @@ export function AnecdoteRanking() {
         .filter(item => item.content.includes(filter))
         .map((item) => {
           return (
-            <div key={item.content}>
+            <div key={item.id}>
               &apos;{item.content}&apos; -&gt; has{" "}
               {item.votes} votes
             </div>

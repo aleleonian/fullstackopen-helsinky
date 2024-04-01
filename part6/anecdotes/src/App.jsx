@@ -8,7 +8,7 @@ import {
   initializeAnecdotes,
 } from "./reducers/anecdoteReducer.jsx";
 import anecdoteService from "./services/anecdotes.js";
-import { setNotificationMessage } from "./reducers/notificationReducer";
+import { setNotification } from "./reducers/notificationReducer";
 import { createFilter } from "./reducers/filterReducer";
 import { AnecdoteList } from "./components/AnecdoteList";
 import { AnecdoteForm } from "./components/AnecdoteForm";
@@ -30,7 +30,7 @@ const App = () => {
     event.target.anecdote.value = "";
     if (!newAnecdoteStr || newAnecdoteStr.length === 0) {
       alert("Anecdote must not be empty!");
-      dispatch(setNotificationMessage("Anecdote must not be empty!"));
+      dispatch(setNotification("Anecdote must not be empty!", 5));
       return;
     }
     dispatch(createAnecdote(newAnecdoteStr));
