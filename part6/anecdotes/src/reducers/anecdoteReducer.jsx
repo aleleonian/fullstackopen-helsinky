@@ -1,5 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import anecdoteService from "../services/anecdotes";
+import { setNotificationMessage } from "./notificationReducer";
+
 const list = [];
 
 const initialState = {
@@ -56,6 +58,21 @@ export const createAnecdote = (content) => {
     } catch (error) {
       dispatch(
         setNotificationMessage("Error adding new anecodte: ", error.message)
+      );
+    }
+  };
+};
+export const voteForThisAnecdote = (anecdote) => {
+  return async (dispatch) => {
+    try {
+      const newAnecdote = {...anecdote}
+      newAnecdote.votes += 1;
+      const updatedAnecdote = await anecdoteService.update(newAnecdote);
+      dispatch(voteAnecdote());
+      dispatch(setNotificationMessage(`You voted for '${anecdote.content}'`));
+    } catch (error) {
+      dispatch(
+        setNotificationMessage("Error upvoting anecodte: ", error.message)
       );
     }
   };
