@@ -1,4 +1,6 @@
 import axios from 'axios';
+import { customLog } from './util';
+
 const baseUrl = 'http://localhost:3001/anecdotes';
 
 export async function getAnecdotes() {
@@ -10,5 +12,11 @@ export async function getAnecdotes() {
     }
 }
 
-export const createAnecdote = async newAnecdote =>
-    await axios.post(baseUrl, newAnecdote).then(res => res.data)
+export const createAnecdote = async newAnecdote => {
+    await axios.post(baseUrl, newAnecdote).then(res => res.data);
+}
+
+export const updateAnecdote = async updatedAnecdote => {
+    customLog(updatedAnecdote);
+    await axios.put(`${baseUrl}/${updatedAnecdote.id}`, updatedAnecdote).then(res => res.data);
+}
