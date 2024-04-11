@@ -2,44 +2,28 @@ import AnecdoteForm from './components/AnecdoteForm';
 import Notification from './components/Notification';
 import { useQuery } from '@tanstack/react-query';
 import { getAnecdotes } from './requests';
-import axios from 'axios';
+import { customLog } from './util';
 
 const App = () => {
 
-  const handleVote = (anecdote) => {
-    console.log('vote')
-  }
-
   const { data, isError, isLoading, error } = useQuery({
     queryKey: ['anecdotes'],
-    // queryFn: () => axios.get('http://localhost:3001/anecdotes').then(res => res.data)
-    queryFn: getAnecdotes
+    queryFn: getAnecdotes,
+    retry: 1
   });
-
-  const pelotas = getAnecdotes();
-
-  // console.log(JSON.parse(JSON.stringify(result)))
-
-  // const anecdotes = [
-  //   {
-  //     "content": "If it hurts, do it more often",
-  //     "id": "47145",
-  //     "votes": 0
-  //   },
-  // ]
 
 
   if (isLoading) return <div>Loading...</div>;
   if (isError) {
-    debugger;
+    customLog(error.message);
     return <div>Error fetching data</div>;
   }
 
   const anecdotes = data;
-  // debugger;
 
-  console.log("pelotas->", pelotas);
-  console.log("anecdotes->", anecdotes);
+  const handleVote = (anecdote) => {
+    console.log('vote')
+  }
 
   return (
     <div>
