@@ -5,7 +5,7 @@ import { useNotificationMessageDispatch } from './AnecdoteContext';
 const AnecdoteForm = () => {
 
   const queryClient = useQueryClient();
-  const dispatch = useNotificationMessageDispatch();
+  const dispatchMessage = useNotificationMessageDispatch();
   const newNoteMutation = useMutation(
     {
       mutationFn: createAnecdote,
@@ -20,7 +20,8 @@ const AnecdoteForm = () => {
     const content = event.target.anecdote.value;
     event.target.anecdote.value = '';
     console.log('new anecdote:', content);
-    dispatch({ message: `You added: ${content}` });
+    dispatchMessage({ message: `You added: ${content}` });
+    setTimeout(() => { dispatchMessage({ message: null }) }, 3000);
     newNoteMutation.mutate({ content, votes: 0 });
   }
 

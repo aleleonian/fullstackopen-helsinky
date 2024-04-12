@@ -7,7 +7,7 @@ const anecdoteReducer = (state, action) => {
 const AnecdoteContext = createContext();
 
 export const AnecdoteContextProvider = (props) => {
-  const [notificationMessage, notificationMessageDispatch] = useReducer(anecdoteReducer, "i'll take you shopping");
+  const [notificationMessage, notificationMessageDispatch] = useReducer(anecdoteReducer, null);
 
   return (
     <AnecdoteContext.Provider value={[notificationMessage, notificationMessageDispatch]}>
