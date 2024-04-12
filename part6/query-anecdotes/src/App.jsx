@@ -3,6 +3,7 @@ import Notification from './components/Notification';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getAnecdotes, updateAnecdote } from './requests';
 import { customLog } from './util';
+import { useNotificationMessage } from './components/AnecdoteContext';
 
 const App = () => {
   const queryClient = useQueryClient();
@@ -20,12 +21,7 @@ const App = () => {
     retry: 1
   });
 
-
-  if (isLoading) return <div>Loading...</div>;
-  if (isError) {
-    customLog(error.message);
-    return <div>Error fetching data</div>;
-  }
+  const notificationMessageStr = useNotificationMessage();
 
   const anecdotes = data;
 
@@ -34,11 +30,17 @@ const App = () => {
     updateAnecdoteMutation.mutate(anecdote);
   }
 
+  if (isLoading) return <div>Loading...</div>;
+  if (isError) {
+    customLog(error.message);
+    return <div>Error fetching data</div>;
+  }
+
   return (
     <div>
       <h3>Anecdote app</h3>
 
-      <Notification />
+      <Notification message={notificationMessageStr} />
       <AnecdoteForm />
 
       {anecdotes.map(anecdote =>
