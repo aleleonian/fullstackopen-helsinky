@@ -12,6 +12,16 @@ const AnecdoteForm = () => {
       onSuccess: () => {
         queryClient.invalidateQueries('anecdotes')
       },
+      onMutate: async (anecdoteObject) => {
+        // Perform validation or any other tasks before the mutation
+        if (!anecdoteObject || anecdoteObject.content.length < 5) {
+          dispatchMessage({ message: `Anecdote length too short. Should be at least 5 chars.` });
+          setTimeout(() => { dispatchMessage({ message: null }) }, 3000);
+          // throw new Error('Invalid data');
+        }
+        // Return context object to be passed to onSuccess, onError, and onSettled callbacks
+        return undefined;
+      },
     }
   );
 
@@ -20,11 +30,6 @@ const AnecdoteForm = () => {
     const content = event.target.anecdote.value;
     event.target.anecdote.value = '';
     console.log('new anecdote:', content);
-    if (content.length < 5) {
-      dispatchMessage({ message: `Anecdote length too short. Should be at least 5 chars.` });
-      setTimeout(() => { dispatchMessage({ message: null }) }, 3000);
-      return;
-    }
     dispatchMessage({ message: `You added: ${content}` });
     setTimeout(() => { dispatchMessage({ message: null }) }, 3000);
     newNoteMutation.mutate({ content, votes: 0 });
