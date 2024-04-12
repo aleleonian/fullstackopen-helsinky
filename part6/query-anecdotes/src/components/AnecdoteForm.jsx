@@ -20,6 +20,11 @@ const AnecdoteForm = () => {
     const content = event.target.anecdote.value;
     event.target.anecdote.value = '';
     console.log('new anecdote:', content);
+    if (content.length < 5) {
+      dispatchMessage({ message: `Anecdote length too short. Should be at least 5 chars.` });
+      setTimeout(() => { dispatchMessage({ message: null }) }, 3000);
+      return;
+    }
     dispatchMessage({ message: `You added: ${content}` });
     setTimeout(() => { dispatchMessage({ message: null }) }, 3000);
     newNoteMutation.mutate({ content, votes: 0 });
