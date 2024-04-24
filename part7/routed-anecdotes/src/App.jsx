@@ -54,18 +54,31 @@ const Footer = () => (
   </div>
 )
 const CreateNew = (props) => {
-  const content = useField('text')
-  const author = useField('text')
-  const info = useField('text')
+  const content = useField('text', 'content');
+  const author = useField('text', 'author');
+  const info = useField('text', 'infor');
 
   const handleSubmit = (e) => {
     e.preventDefault()
     props.addNew({
-      content,
-      author,
-      info,
+      content: content.value,
+      author: author.value,
+      info: info.value,
       votes: 0
     })
+  }
+
+
+  const { reset: contentReset, ...contentProps } = content;
+  const { reset: authorReset, ...authorProps } = author;
+  const { reset: infoReset, ...infoProps } = info;
+
+  const resetForm = (event) => {
+
+    event.preventDefault();
+    contentReset();
+    authorReset();
+    infoReset();
   }
 
   return (
@@ -74,17 +87,18 @@ const CreateNew = (props) => {
       <form onSubmit={handleSubmit}>
         <div>
           content
-          <input {...content} />
+          <input {...contentProps} />
         </div>
         <div>
           author
-          <input {...author} />
+          <input {...authorProps} />
         </div>
         <div>
           url for more info
-          <input {...info} />
+          <input {...infoProps} />
         </div>
         <button>create</button>
+        <button onClick={resetForm}>reset</button>
       </form>
     </div>
   )
@@ -123,6 +137,8 @@ const App = () => {
 
   const addNew = (anecdote) => {
     anecdote.id = Math.round(Math.random() * 10000);
+
+
     const newAnecdotes = [...anecdotes];
     newAnecdotes.push(anecdote);
     setAnecdotes(newAnecdotes);
