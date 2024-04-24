@@ -15,7 +15,6 @@ const Menu = () => {
     </div>
   )
 }
-
 const AnecdoteList = ({ anecdotes }) => (
   <div>
     <h2>Anecdotes</h2>
@@ -33,7 +32,6 @@ const Anecdote = ({ anecdote }) => {
     </div>
   )
 }
-
 const About = () => (
   <div>
     <h2>About anecdote app</h2>
@@ -47,7 +45,6 @@ const About = () => (
     <p>Software engineering is full of excellent anecdotes, at this app you can find the best and add more.</p>
   </div>
 )
-
 const Footer = () => (
   <div>
     Anecdote app for <a href='https://fullstackopen.com/'>Full Stack Open</a>.
@@ -55,7 +52,6 @@ const Footer = () => (
     See <a href='https://github.com/fullstack-hy2020/routed-anecdotes/blob/master/src/App.js'>https://github.com/fullstack-hy2020/routed-anecdotes/blob/master/src/App.js</a> for the source code.
   </div>
 )
-
 const CreateNew = (props) => {
   const [content, setContent] = useState('')
   const [author, setAuthor] = useState('')
@@ -94,8 +90,15 @@ const CreateNew = (props) => {
   )
 
 }
-
-
+const Notification = ({ message }) => {
+  return (
+    <>
+      <h3>
+        {message}
+      </h3>
+    </>
+  )
+}
 const App = () => {
   const [anecdotes, setAnecdotes] = useState([{
     content: 'If it hurts, do it more often',
@@ -123,6 +126,8 @@ const App = () => {
     const newAnecdotes = [...anecdotes];
     newAnecdotes.push(anecdote);
     setAnecdotes(newAnecdotes);
+    setNotification("A new anecdote: " + anecdote.content + " was created!");
+    setTimeout(() => { setNotification(null) }, 3000);
     navigate("/");
   }
 
@@ -141,7 +146,7 @@ const App = () => {
     <div>
       <h1>Software anecdotes</h1>
       <Menu />
-
+      {notification && <Notification message={notification} />}
       <Routes>
         <Route path="/anecdotes/:id" element={<Anecdote anecdote={anecdote} />} />
         <Route path="/" element={<AnecdoteList anecdotes={anecdotes} />} />
