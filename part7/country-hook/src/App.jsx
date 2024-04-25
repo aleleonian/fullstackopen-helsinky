@@ -26,14 +26,19 @@ const Country = ({ country }) => {
 
 const App = () => {
   const nameInput = useField('text')
-  const [name, setName] = useState('')
+  const [name, setName] = useState('');
+  
+  if(name !== ""){
+    
+  }
+
   const country = useCountry(name)
 
-  debugger;
 
   const fetch = (e) => {
     e.preventDefault();
-    setName(nameInput.value)
+    setName(nameInput.value);
+    
   }
   return (
     <div>

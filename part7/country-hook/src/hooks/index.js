@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 
 export const useField = (type) => {
@@ -16,10 +16,10 @@ export const useField = (type) => {
 }
 
 export const useCountry = (name) => {
-    const [country, setCountry] = useState(null)
+    const [country, setCountry] = useState(name);
     useEffect(() => {
-        debugger;
         if (name != "") {
+            
             axios.get(`https://studies.cs.helsinki.fi/restcountries/api/name/${name}`)
                 .then(response => {
                     const countryData = {};
@@ -31,7 +31,7 @@ export const useCountry = (name) => {
                     setCountry({ found: false });
                 })
         }
-    }, [country])
+    }, [name])
 
     return country
 }
