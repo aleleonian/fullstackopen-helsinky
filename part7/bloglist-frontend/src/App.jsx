@@ -4,6 +4,24 @@ import loginService from './services/login';
 import Blog from './components/Blog';
 import { Form } from './components/Form';
 import './assets/App.css';
+import { createStore } from 'redux';
+
+const counterReducer = (state = 0, action) => {
+  switch (action.type) {
+    case 'SET_USER':
+      return state + 1
+    case 'SET_PASSWORD':
+      return state - 1
+    case 'SET_SUCCESS_MESSAGE':
+      return 0
+    case 'SET_ERROR_MESSAGE':
+      return 0
+    default:
+      return state
+  }
+}
+
+const store = createStore(counterReducer)
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
@@ -148,10 +166,9 @@ const App = () => {
       })
       .catch((exception) => {
         setErrorMessage(
-          `Error creating blogpost: ${
-            exception.response.data.error
-              ? exception.response.data.error
-              : exception.message
+          `Error creating blogpost: ${exception.response.data.error
+            ? exception.response.data.error
+            : exception.message
           }`
         );
         setTimeout(() => {
