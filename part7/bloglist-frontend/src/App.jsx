@@ -123,7 +123,6 @@ const App = () => {
     blogService
       .create(newBlogpostObject)
       .then((response) => {
-
         const newBlogpostsArray = [...blogs];
         newBlogpostObject.id = response.data.id;
         const loggedUser = JSON.parse(
@@ -148,7 +147,6 @@ const App = () => {
         // by making a new object from what was returned
       })
       .catch((exception) => {
-
         setErrorMessage(
           `Error creating blogpost: ${
             exception.response.data.error

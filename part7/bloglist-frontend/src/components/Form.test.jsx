@@ -11,17 +11,18 @@ test('Creates a new blogpost', async () => {
   const values = {
     title: 'Hello, world!',
     author: 'Cacho Castaña',
-    url: 'www.google.com.ars'
+    url: 'www.google.com.ars',
   };
 
   const form = container.querySelector('#newBlogpost');
 
   // Set values for inputs
   const inputs = Object.keys(values);
-  inputs.forEach(input => {
-    fireEvent.change(container.querySelector(`#${input}`), { target: { value: values[input] } });
+  inputs.forEach((input) => {
+    fireEvent.change(container.querySelector(`#${input}`), {
+      target: { value: values[input] },
+    });
   });
-
 
   // Submit form
   fireEvent.submit(form);

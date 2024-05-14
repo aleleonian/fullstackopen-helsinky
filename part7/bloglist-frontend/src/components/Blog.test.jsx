@@ -6,7 +6,7 @@ test('renders content', async () => {
   const newBlog = {
     title: 'Component testing is done with react-testing-library',
     url: 'http://www.bugle.com',
-    likes:0,
+    likes: 0,
     author: 'LatexX',
   };
 
@@ -14,7 +14,9 @@ test('renders content', async () => {
 
   render(<Blog blog={newBlog} increaseLikes={mockHandler} />);
 
-  let element = screen.getByText('Component testing is done with react-testing-library');
+  let element = screen.getByText(
+    'Component testing is done with react-testing-library'
+  );
   expect(element).toBeDefined();
   // screen.debug();
 
@@ -39,5 +41,4 @@ test('renders content', async () => {
   await user.click(button);
   await user.click(button);
   expect(mockHandler.mock.calls).toHaveLength(2);
-
 });

@@ -64,15 +64,15 @@ const Blog = ({
           <div>{blog.author}</div>
           {loggedUser &&
             JSON.parse(loggedUser).username === blog.user.username && (
-            <div>
-              <button
-                data-testid="remove-button"
-                onClick={() => removeBlogPost(blog)}
-              >
+              <div>
+                <button
+                  data-testid="remove-button"
+                  onClick={() => removeBlogPost(blog)}
+                >
                   remove
-              </button>
-            </div>
-          )}
+                </button>
+              </div>
+            )}
         </>
       )}
     </div>
