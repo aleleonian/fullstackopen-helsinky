@@ -4,32 +4,19 @@ import loginService from './services/login';
 import Blog from './components/Blog';
 import { Form } from './components/Form';
 import './assets/App.css';
-import { createStore } from 'redux';
+import { setUser, setPassword, setErrorMessage, setSuccessMessage } from './actions';
+import { useSelector, useDispatch } from 'react-redux';
 
-const counterReducer = (state = 0, action) => {
-  switch (action.type) {
-    case 'SET_USER':
-      return state + 1;
-    case 'SET_PASSWORD':
-      return state - 1;
-    case 'SET_SUCCESS_MESSAGE':
-      return 0;
-    case 'SET_ERROR_MESSAGE':
-      return 0;
-    default:
-      return state;
-  }
-};
-
-const store = createStore(counterReducer);
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [user, setUser] = useState(null);
-  const [successMessage, setSuccessMessage] = useState(null);
-  const [errorMessage, setErrorMessage] = useState(null);
+  // const [successMessage, setSuccessMessage] = useState(null);
+  // const [errorMessage, setErrorMessage] = useState(null);
+  const { errorMessage, successMessage } = useSelector((state) => state);
+  const dispatch = useDispatch();
 
   const blogpostFormRef = useRef();
 
@@ -44,9 +31,9 @@ const App = () => {
         })
         .catch((error) => {
           console.log(error);
-          setErrorMessage(`Error requesting blogposts: ${error.message}`);
+          dispatch(setErrorMessage(`Error requesting blogposts: ${error.message}`));
           setTimeout(() => {
-            setErrorMessage(null);
+            dispatch(setErrorMessage(null));
           }, 5000);
         });
     }
@@ -77,9 +64,9 @@ const App = () => {
       setUsername('');
       setPassword('');
     } catch (exception) {
-      setErrorMessage('Wrong credentials');
+      dispatch(setErrorMessage('Wrong credentials'));
       setTimeout(() => {
-        setErrorMessage(null);
+        dispatch(setErrorMessage(null));
       }, 5000);
     }
   };
@@ -153,27 +140,26 @@ const App = () => {
           newBlogpostObject.user.id = loggedUser.id;
         }
         newBlogpostsArray.push(newBlogpostObject);
-        setSuccessMessage('Blogpost created succesfully!');
+        dispatch(setSuccessMessage('Blogpost created succesfully!'));
         cleanup();
         setBlogs(newBlogpostsArray);
         blogpostFormRef.current.toggleVisibility();
         setTimeout(() => {
-          setSuccessMessage(null);
+          dispatch(setSuccessMessage(null));
         }, 5000);
 
         // now gotta add the new blogpost locally
         // by making a new object from what was returned
       })
       .catch((exception) => {
-        setErrorMessage(
-          `Error creating blogpost: ${
-            exception.response.data.error
-              ? exception.response.data.error
-              : exception.message
+        dispatch(setErrorMessage(
+          `Error creating blogpost: ${exception.response.data.error
+            ? exception.response.data.error
+            : exception.message
           }`
-        );
+        ));
         setTimeout(() => {
-          setErrorMessage(null);
+          dispatch(setErrorMessage(null));
         }, 5000);
       });
   };
@@ -197,16 +183,16 @@ const App = () => {
   };
 
   const successMessageAlert = (message) => {
-    setSuccessMessage(message);
+    dispatch(setSuccessMessage(message));
     setTimeout(() => {
-      setSuccessMessage(null);
+      dispatch(setSuccessMessage(null));
     }, 5000);
   };
 
   const errorMessageAlert = (message) => {
-    setErrorMessage(message);
+    dispatch(setErrorMessage(message));
     setTimeout(() => {
-      setErrorMessage(null);
+      dispatch(setErrorMessage(null));
     }, 5000);
   };
 
