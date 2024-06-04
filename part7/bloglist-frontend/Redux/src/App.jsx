@@ -4,18 +4,16 @@ import loginService from './services/login';
 import Blog from './components/Blog';
 import { Form } from './components/Form';
 import './assets/App.css';
-import { setUser, setPassword, setErrorMessage, setSuccessMessage } from './actions';
+import { setUser, setPassword, setErrorMessage, setSuccessMessage, setBlogs } from './actions';
 import { useSelector, useDispatch } from 'react-redux';
 
 
 const App = () => {
-  const [blogs, setBlogs] = useState([]);
+  // const [blogs, setBlogs] = useState([]);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [user, setUser] = useState(null);
-  // const [successMessage, setSuccessMessage] = useState(null);
-  // const [errorMessage, setErrorMessage] = useState(null);
-  const { errorMessage, successMessage } = useSelector((state) => state);
+  const { errorMessage, successMessage, blogs } = useSelector((state) => state);
   const dispatch = useDispatch();
 
   const blogpostFormRef = useRef();
@@ -26,8 +24,7 @@ const App = () => {
         .getAll()
         .then((blogs) => {
           blogs.sort((a, b) => b.likes - a.likes);
-
-          setBlogs(blogs);
+          dispatch(setBlogs(blogs));
         })
         .catch((error) => {
           console.log(error);

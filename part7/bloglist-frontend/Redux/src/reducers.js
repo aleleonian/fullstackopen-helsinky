@@ -5,6 +5,7 @@ import {
   SET_PASSWORD,
   SET_ERROR_MESSAGE,
   SET_SUCCESS_MESSAGE,
+  SET_BLOGS
 } from './actions';
 
 const initialState = {
@@ -13,6 +14,7 @@ const initialState = {
   password: '',
   errorMessage: null,
   successMessage: null,
+  blogs: []
 };
 
 const rootReducer = (state = initialState, action) => {
@@ -27,6 +29,8 @@ const rootReducer = (state = initialState, action) => {
       return { ...state, errorMessage: action.payload };
     case SET_SUCCESS_MESSAGE:
       return { ...state, successMessage: action.payload };
+    case SET_BLOGS:
+      return { ...state, blogs: action.payload };
     default:
       return state;
   }
