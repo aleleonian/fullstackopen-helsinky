@@ -4,16 +4,24 @@ import loginService from './services/login';
 import Blog from './components/Blog';
 import { Form } from './components/Form';
 import './assets/App.css';
-import { setUser, setPassword, setErrorMessage, setSuccessMessage, setBlogs } from './actions';
+import { setUser, setUsername, setPassword, setErrorMessage, setSuccessMessage, setBlogs } from './actions';
 import { useSelector, useDispatch } from 'react-redux';
 
+const selectErrorMessage = (state) => state.errorMessage;
+const selectSuccessMessage = (state) => state.successMessage;
+const selectBlogs = (state) => state.blogs;
+const selectUser = (state) => state.user;
+const selectUsername = (state) => state.username;
+const selectPassword = (state) => state.password;
 
 const App = () => {
-  // const [blogs, setBlogs] = useState([]);
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [user, setUser] = useState(null);
-  const { errorMessage, successMessage, blogs } = useSelector((state) => state);
+  const errorMessage = useSelector(selectErrorMessage);
+  const successMessage = useSelector(selectSuccessMessage);
+  const blogs = useSelector(selectBlogs);
+  const user = useSelector(selectUser);
+  const username = useSelector(selectUsername);
+  const password = useSelector(selectPassword);
+
   const dispatch = useDispatch();
 
   const blogpostFormRef = useRef();
@@ -41,7 +49,7 @@ const App = () => {
     if (loggedUser) {
       loggedUser = JSON.parse(loggedUser);
       blogService.setToken(loggedUser.token);
-      setUser(loggedUser);
+      dispatch(setUser(loggedUser));
     }
   }, []);
 
@@ -57,9 +65,9 @@ const App = () => {
         JSON.stringify(user)
       );
       blogService.setToken(user.token);
-      setUser(user);
-      setUsername('');
-      setPassword('');
+      dispatch(setUser(user));
+      dispatch(setUsername(''));
+      dispatch(setPassword(''));
     } catch (exception) {
       dispatch(setErrorMessage('Wrong credentials'));
       setTimeout(() => {
@@ -79,7 +87,7 @@ const App = () => {
             value={username}
             name="Username"
             data-testid="username"
-            onChange={({ target }) => setUsername(target.value)}
+            onChange={({ target }) => dispatch(setUsername(target.value))}
           />
         </div>
         <div>
@@ -89,7 +97,7 @@ const App = () => {
             value={password}
             name="Password"
             data-testid="password"
-            onChange={({ target }) => setPassword(target.value)}
+            onChange={({ target }) => dispatch(setPassword(target.value))}
           />
         </div>
         <button type="submit" onClick={handleLogin}>
