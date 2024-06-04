@@ -139,7 +139,7 @@ const App = () => {
         newBlogpostsArray.push(newBlogpostObject);
         dispatch(setSuccessMessage('Blogpost created succesfully!'));
         cleanup();
-        setBlogs(newBlogpostsArray);
+        dispatch(setBlogs(newBlogpostsArray));
         blogpostFormRef.current.toggleVisibility();
         setTimeout(() => {
           dispatch(setSuccessMessage(null));
@@ -167,7 +167,7 @@ const App = () => {
     );
     const newBlogpostsArray = [...blogs];
     newBlogpostsArray[desiredBlogIndex] = updatedBlogpost;
-    setBlogs(newBlogpostsArray);
+    dispatch(setBlogs(newBlogpostsArray));
   };
 
   const removeThisBlogpost = (removedBlogpostId) => {
@@ -176,7 +176,7 @@ const App = () => {
       (blog) => blog.id === removedBlogpostId
     );
     updatedBlogposts.splice(removedBpIndex, 1);
-    setBlogs(updatedBlogposts);
+    dispatch(setBlogs(updatedBlogposts));
   };
 
   const successMessageAlert = (message) => {
