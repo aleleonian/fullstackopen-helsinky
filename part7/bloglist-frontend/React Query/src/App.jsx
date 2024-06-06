@@ -4,7 +4,7 @@ import loginService from './services/login';
 import Blog from './components/Blog';
 import { Form } from './components/Form';
 import './assets/App.css';
-import { createStore } from 'redux';
+import { useQuery } from '@tanstack/react-query';
 
 const counterReducer = (state = 0, action) => {
   switch (action.type) {
@@ -21,36 +21,37 @@ const counterReducer = (state = 0, action) => {
   }
 };
 
-const store = createStore(counterReducer);
+// const store = createStore(counterReducer);
 
 const App = () => {
-  const [blogs, setBlogs] = useState([]);
+  // const [blogs, setBlogs] = useState([]);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [user, setUser] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
-
+  const token = blogService.getToken();
   const blogpostFormRef = useRef();
+  debugger;
 
-  useEffect(() => {
-    if (user !== null) {
-      blogService
-        .getAll()
-        .then((blogs) => {
-          blogs.sort((a, b) => b.likes - a.likes);
+  // useEffect(() => {
+  //   if (user !== null) {
+  //     blogService
+  //       .getAll()
+  //       .then((blogs) => {
+  //         blogs.sort((a, b) => b.likes - a.likes);
 
-          setBlogs(blogs);
-        })
-        .catch((error) => {
-          console.log(error);
-          setErrorMessage(`Error requesting blogposts: ${error.message}`);
-          setTimeout(() => {
-            setErrorMessage(null);
-          }, 5000);
-        });
-    }
-  }, [user]);
+  //         setBlogs(blogs);
+  //       })
+  //       .catch((error) => {
+  //         console.log(error);
+  //         setErrorMessage(`Error requesting blogposts: ${error.message}`);
+  //         setTimeout(() => {
+  //           setErrorMessage(null);
+  //         }, 5000);
+  //       });
+  //   }
+  // }, [user]);
 
   useEffect(() => {
     let loggedUser = window.localStorage.getItem('loggedBlogpostAppUser');
@@ -60,6 +61,36 @@ const App = () => {
       setUser(loggedUser);
     }
   }, []);
+
+
+
+  const { data: blogs, error, isError, isLoading } = useQuery({
+    queryKey: ['blogs'],
+    queryFn: async () => {
+
+      const token = blogService.getToken();
+
+      if (!token) {
+        throw new Error('User not logged in');
+      }
+
+      const blogs = await blogService.getAll();
+      blogs.sort((a, b) => b.likes - a.likes);
+      return blogs;
+    },
+    enabled: !!token,
+    onError: (error) => {
+      console.error('Error fetching blogs:', error.message);
+    }
+  });
+
+  if (isLoading) {
+    return <div>loading data...</div>
+  }
+
+  if (isError) return <div>{error.message}</div>;
+
+
 
   const handleLogin = async (event) => {
     event.preventDefault();
@@ -166,10 +197,9 @@ const App = () => {
       })
       .catch((exception) => {
         setErrorMessage(
-          `Error creating blogpost: ${
-            exception.response.data.error
-              ? exception.response.data.error
-              : exception.message
+          `Error creating blogpost: ${exception.response.data.error
+            ? exception.response.data.error
+            : exception.message
           }`
         );
         setTimeout(() => {
@@ -228,6 +258,8 @@ const App = () => {
   };
 
   const loggedInuser = () => {
+    console.log("User is logged in!");
+
     return (
       <>
         <Notification message={successMessage} type="success" />

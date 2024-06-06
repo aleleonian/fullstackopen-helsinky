@@ -36,4 +36,8 @@ const remove = (data) => {
   };
   return axios.delete(`${baseUrl}/${data.id}`, config);
 };
-export default { getAll, setToken, create, update, remove };
+
+const getToken = () => {
+  return token;
+}
+export default { getAll, setToken, create, update, remove, getToken };
