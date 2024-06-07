@@ -13,7 +13,6 @@ const App = () => {
   // const [blogs, setBlogs] = useState([]);
   const { state, dispatch } = useContext(BlogContext); // Correct context usage
   // const queryClient = useQueryClient();
-  console.log('State in App:', state); // Log state in App component
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [user, setUser] = useState(null);
@@ -44,7 +43,7 @@ const App = () => {
       }
 
       const blogs = await blogService.getAll();
-      blogs.sort((a, b) => b.likes - a.likes);
+      state.blogs.sort((a, b) => b.likes - a.likes);
       return blogs;
     },
     enabled: !!token,
@@ -57,7 +56,11 @@ const App = () => {
     return <div>loading data...</div>
   }
 
-  if (isError) return <div>{error.message}</div>;
+  // if (isError) return <div>{error.message}</div>;
+  if (isError) {
+    // return <div>{error.message}</div>;
+    return dispatch({ type: 'SET_ERROR_MESSAGE', payload: error.message });
+  }
 
 
 
@@ -77,9 +80,10 @@ const App = () => {
       setUsername('');
       setPassword('');
     } catch (exception) {
-      setErrorMessage('Wrong credentials');
+      const message = exception.response.status === 401 ? "Wrong credentials!" :  exception.message
+      dispatch({ type: 'SET_ERROR_MESSAGE', payload: message });
       setTimeout(() => {
-        setErrorMessage(null);
+        dispatch({ type: 'SET_ERROR_MESSAGE', payload: null });
       }, 5000);
     }
   };
@@ -165,20 +169,28 @@ const App = () => {
         // by making a new object from what was returned
       })
       .catch((exception) => {
-        setErrorMessage(
-          `Error creating blogpost: ${exception.response.data.error
+        // setErrorMessage(
+        //   `Error creating blogpost: ${exception.response.data.error
+        //     ? exception.response.data.error
+        //     : exception.message
+        //   }`
+        // );
+        dispatch({
+          type: 'SET_ERROR_MESSAGE', payload: `Error creating blogpost: ${exception.response.data.error
             ? exception.response.data.error
             : exception.message
-          }`
-        );
+            }`
+        });
         setTimeout(() => {
-          setErrorMessage(null);
+          dispatch({
+            type: 'SET_ERROR_MESSAGE', payload: null
+          });
         }, 5000);
       });
   };
 
   const updateThisBlogpost = (updatedBlogpost) => {
-    const desiredBlogIndex = blogs.findIndex(
+    const desiredBlogIndex = state.blogs.findIndex(
       (blog) => blog.id === updatedBlogpost.id
     );
     const newBlogpostsArray = [...blogs];
@@ -188,7 +200,7 @@ const App = () => {
 
   const removeThisBlogpost = (removedBlogpostId) => {
     const updatedBlogposts = [...blogs];
-    const removedBpIndex = blogs.findIndex(
+    const removedBpIndex = state.blogs.findIndex(
       (blog) => blog.id === removedBlogpostId
     );
     updatedBlogposts.splice(removedBpIndex, 1);
@@ -203,9 +215,13 @@ const App = () => {
   };
 
   const errorMessageAlert = (message) => {
-    setErrorMessage(message);
+    dispatch({
+      type: 'SET_ERROR_MESSAGE', payload: message
+    });
     setTimeout(() => {
-      setErrorMessage(null);
+      dispatch({
+        type: 'SET_ERROR_MESSAGE', payload: null
+      });
     }, 5000);
   };
 
@@ -236,7 +252,7 @@ const App = () => {
         <h2>blogs</h2>
         {user.name} is logged in <button onClick={logOut}>log out</button>
         <Form createBlogpost={newBlogpostHandler} reference={blogpostFormRef} />
-        {blogs.map((blog) => {
+        {state.blogs.map((blog) => {
           return (
             <Blog
               key={blog.id}

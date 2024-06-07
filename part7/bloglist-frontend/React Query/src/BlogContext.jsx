@@ -6,6 +6,7 @@ const initialState = {
   password: '',
   errorMessage: null,
   successMessage: null,
+  blogs:[]
 };
 
 const BlogReducer = (state = initialState, action) => {
@@ -27,24 +28,15 @@ const BlogReducer = (state = initialState, action) => {
 
 const BlogContext = createContext();
 
-export const BlogContextProvider = (props) => {
+export const BlogContextProvider = ({ children }) => {
   const [state, dispatch] = useReducer(BlogReducer, initialState);
-  console.log('Initial State in BlogContextProvider:', state); // Log initial state
   return (
-    <BlogContext.Provider value={[state, dispatch]}>
-      {props.children}
+    <BlogContext.Provider value={{ state, dispatch }}>
+      {children}
     </BlogContext.Provider>
-  )
+  );
 }
 
-export const useNotificationMessage = () => {
-  const messageAndDispatch = useContext(BlogContext)
-  return messageAndDispatch[0]
-}
+export const useBlogContext = () => useContext(BlogContext);
 
-export const useNotificationMessageDispatch = () => {
-  const messageAndDispatch = useContext(BlogContext)
-  return messageAndDispatch[1]
-}
-
-export default BlogContext
+export default BlogContext;
