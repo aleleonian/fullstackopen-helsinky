@@ -1,57 +1,26 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useContext } from 'react';
 import blogService from './services/blogs';
 import loginService from './services/login';
 import Blog from './components/Blog';
 import { Form } from './components/Form';
 import './assets/App.css';
 import { useQuery } from '@tanstack/react-query';
-
-const counterReducer = (state = 0, action) => {
-  switch (action.type) {
-    case 'SET_USER':
-      return state + 1;
-    case 'SET_PASSWORD':
-      return state - 1;
-    case 'SET_SUCCESS_MESSAGE':
-      return 0;
-    case 'SET_ERROR_MESSAGE':
-      return 0;
-    default:
-      return state;
-  }
-};
+import BlogContext from './BlogContext';
 
 // const store = createStore(counterReducer);
 
 const App = () => {
   // const [blogs, setBlogs] = useState([]);
+  const { state, dispatch } = useContext(BlogContext); // Correct context usage
+  // const queryClient = useQueryClient();
+  console.log('State in App:', state); // Log state in App component
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [user, setUser] = useState(null);
-  const [successMessage, setSuccessMessage] = useState(null);
-  const [errorMessage, setErrorMessage] = useState(null);
+  // const [successMessage, setSuccessMessage] = useState(null);
+  // const [errorMessage, setErrorMessage] = useState(null);
   const token = blogService.getToken();
   const blogpostFormRef = useRef();
-  debugger;
-
-  // useEffect(() => {
-  //   if (user !== null) {
-  //     blogService
-  //       .getAll()
-  //       .then((blogs) => {
-  //         blogs.sort((a, b) => b.likes - a.likes);
-
-  //         setBlogs(blogs);
-  //       })
-  //       .catch((error) => {
-  //         console.log(error);
-  //         setErrorMessage(`Error requesting blogposts: ${error.message}`);
-  //         setTimeout(() => {
-  //           setErrorMessage(null);
-  //         }, 5000);
-  //       });
-  //   }
-  // }, [user]);
 
   useEffect(() => {
     let loggedUser = window.localStorage.getItem('loggedBlogpostAppUser');
@@ -143,7 +112,7 @@ const App = () => {
           login
         </button>
       </form>
-      {errorMessage && <Notification message={errorMessage} type="error" />}
+      {state.errorMessage && <Notification message={state.errorMessage} type="error" />}
     </>
   );
 
@@ -262,8 +231,8 @@ const App = () => {
 
     return (
       <>
-        <Notification message={successMessage} type="success" />
-        <Notification message={errorMessage} type="error" />
+        <Notification message={state.successMessage} type="success" />
+        <Notification message={state.errorMessage} type="error" />
         <h2>blogs</h2>
         {user.name} is logged in <button onClick={logOut}>log out</button>
         <Form createBlogpost={newBlogpostHandler} reference={blogpostFormRef} />
