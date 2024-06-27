@@ -12,6 +12,7 @@ import BlogContext from './BlogContext';
 const App = () => {
   // const [blogs, setBlogs] = useState([]);
   const { state, dispatch } = useContext(BlogContext); // Correct context usage
+  const [hasDispatchedError, setHasDispatchedError] = useState(false);
   // const queryClient = useQueryClient();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -29,8 +30,6 @@ const App = () => {
       setUser(loggedUser);
     }
   }, []);
-
-
 
   const { data: blogs, error, isError, isLoading } = useQuery({
     queryKey: ['blogs'],
@@ -52,14 +51,22 @@ const App = () => {
     }
   });
 
+  useEffect(() => {
+    if (isError && !hasDispatchedError) {
+      dispatch({ type: 'SET_ERROR_MESSAGE', payload: error.message });
+      setHasDispatchedError(true);
+    }
+  }, [isError, error, hasDispatchedError, dispatch]);
+
   if (isLoading) {
     return <div>loading data...</div>
   }
 
   // if (isError) return <div>{error.message}</div>;
   if (isError) {
-    // return <div>{error.message}</div>;
-    return dispatch({ type: 'SET_ERROR_MESSAGE', payload: error.message });
+    // debugger;
+    return <div>{state.errorMessage}</div>;
+    // return dispatch({ type: 'SET_ERROR_MESSAGE', payload: error.message });
   }
 
 
@@ -80,7 +87,7 @@ const App = () => {
       setUsername('');
       setPassword('');
     } catch (exception) {
-      const message = exception.response.status === 401 ? "Wrong credentials!" :  exception.message
+      const message = exception.response.status === 401 ? "Wrong credentials!" : exception.message
       dispatch({ type: 'SET_ERROR_MESSAGE', payload: message });
       setTimeout(() => {
         dispatch({ type: 'SET_ERROR_MESSAGE', payload: null });
