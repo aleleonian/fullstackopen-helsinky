@@ -7,18 +7,9 @@ import './assets/App.css';
 import { useQuery } from '@tanstack/react-query';
 import BlogContext from './BlogContext';
 
-// const store = createStore(counterReducer);
-
 const App = () => {
-  // const [blogs, setBlogs] = useState([]);
-  const { state, dispatch } = useContext(BlogContext); // Correct context usage
+  const { state, dispatch } = useContext(BlogContext); 
   const [hasDispatchedError, setHasDispatchedError] = useState(false);
-  // const queryClient = useQueryClient();
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [user, setUser] = useState(null);
-  // const [successMessage, setSuccessMessage] = useState(null);
-  // const [errorMessage, setErrorMessage] = useState(null);
   const token = blogService.getToken();
   const blogpostFormRef = useRef();
 
@@ -27,7 +18,7 @@ const App = () => {
     if (loggedUser) {
       loggedUser = JSON.parse(loggedUser);
       blogService.setToken(loggedUser.token);
-      setUser(loggedUser);
+      dispatch({ type: 'SET_USER', payload: loggedUser });
     }
   }, []);
 
@@ -42,7 +33,8 @@ const App = () => {
       }
 
       const blogs = await blogService.getAll();
-      state.blogs.sort((a, b) => b.likes - a.likes);
+      blogs.sort((a, b) => b.likes - a.likes);
+      dispatch({ type: 'SET_BLOGS', payload: blogs });
       return blogs;
     },
     enabled: !!token,
@@ -62,11 +54,8 @@ const App = () => {
     return <div>loading data...</div>
   }
 
-  // if (isError) return <div>{error.message}</div>;
   if (isError) {
-    // debugger;
     return <div>{state.errorMessage}</div>;
-    // return dispatch({ type: 'SET_ERROR_MESSAGE', payload: error.message });
   }
 
 
@@ -74,6 +63,9 @@ const App = () => {
   const handleLogin = async (event) => {
     event.preventDefault();
     try {
+      const username = state.username;
+      const password = state.password;
+
       const user = await loginService.login({
         username,
         password,
@@ -83,9 +75,9 @@ const App = () => {
         JSON.stringify(user)
       );
       blogService.setToken(user.token);
-      setUser(user);
-      setUsername('');
-      setPassword('');
+      dispatch({ type: 'SET_USER', payload: user });
+      dispatch({ type: 'SET_USERNAME', payload: '' });
+      dispatch({ type: 'SET_PASSWORD', payload: '' });
     } catch (exception) {
       const message = exception.response.status === 401 ? "Wrong credentials!" : exception.message
       dispatch({ type: 'SET_ERROR_MESSAGE', payload: message });
@@ -103,20 +95,20 @@ const App = () => {
           username
           <input
             type="text"
-            value={username}
+            value={state.username}
             name="Username"
             data-testid="username"
-            onChange={({ target }) => setUsername(target.value)}
+            onChange={({ target }) => dispatch({ type: 'SET_USERNAME', payload: target.value })}
           />
         </div>
         <div>
           password
           <input
             type="password"
-            value={password}
+            value={state.password}
             name="Password"
             data-testid="password"
-            onChange={({ target }) => setPassword(target.value)}
+            onChange={({ target }) => ispatch({ type: 'SET_PASSWORD', payload: target.value })}
           />
         </div>
         <button type="submit" onClick={handleLogin}>
@@ -164,12 +156,12 @@ const App = () => {
           newBlogpostObject.user.id = loggedUser.id;
         }
         newBlogpostsArray.push(newBlogpostObject);
-        setSuccessMessage('Blogpost created succesfully!');
+        dispatch({ type: 'SET_SUCCESS_MESSAGE', payload: 'Blogpost created succesfully!' });
         cleanup();
-        setBlogs(newBlogpostsArray);
+        dispatch({ type: 'SET_BLOGS', payload: newBlogpostsArray });
         blogpostFormRef.current.toggleVisibility();
         setTimeout(() => {
-          setSuccessMessage(null);
+          dispatch({ type: 'SET_SUCCESS_MESSAGE', payload: null });
         }, 5000);
 
         // now gotta add the new blogpost locally
@@ -202,7 +194,7 @@ const App = () => {
     );
     const newBlogpostsArray = [...blogs];
     newBlogpostsArray[desiredBlogIndex] = updatedBlogpost;
-    setBlogs(newBlogpostsArray);
+    dispatch({ type: 'SET_BLOGS', payload: newBlogpostsArray });
   };
 
   const removeThisBlogpost = (removedBlogpostId) => {
@@ -211,13 +203,13 @@ const App = () => {
       (blog) => blog.id === removedBlogpostId
     );
     updatedBlogposts.splice(removedBpIndex, 1);
-    setBlogs(updatedBlogposts);
+    dispatch({ type: 'SET_BLOGS', payload: updatedBlogposts });
   };
 
   const successMessageAlert = (message) => {
-    setSuccessMessage(message);
+    dispatch({ type: 'SET_SUCCESS_MESSAGE', payload: message });
     setTimeout(() => {
-      setSuccessMessage(null);
+      dispatch({ type: 'SET_SUCCESS_MESSAGE', payload: null });
     }, 5000);
   };
 
@@ -251,13 +243,12 @@ const App = () => {
 
   const loggedInuser = () => {
     console.log("User is logged in!");
-
     return (
       <>
         <Notification message={state.successMessage} type="success" />
         <Notification message={state.errorMessage} type="error" />
         <h2>blogs</h2>
-        {user.name} is logged in <button onClick={logOut}>log out</button>
+        {state.user.name} is logged in <button onClick={logOut}>log out</button>
         <Form createBlogpost={newBlogpostHandler} reference={blogpostFormRef} />
         {state.blogs.map((blog) => {
           return (
@@ -277,8 +268,8 @@ const App = () => {
   };
   return (
     <>
-      {user && loggedInuser()}
-      {!user && loginForm()}
+      {state.user && loggedInuser()}
+      {!state.user && loginForm()}
     </>
   );
 };

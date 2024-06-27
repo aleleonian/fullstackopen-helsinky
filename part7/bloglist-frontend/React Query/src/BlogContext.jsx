@@ -1,4 +1,5 @@
 import { createContext, useReducer, useContext } from 'react';
+import blogs from './services/blogs';
 
 const initialState = {
   user: null,
@@ -21,6 +22,8 @@ const BlogReducer = (state = initialState, action) => {
       return { ...state, errorMessage: action.payload };
     case 'SET_SUCCESS_MESSAGE':
       return { ...state, successMessage: action.payload };
+    case 'SET_BLOGS':
+      return { ...state, blogs: action.payload };
     default:
       return state;
   }
