@@ -6,9 +6,10 @@ import { Form } from './components/Form';
 import './assets/App.css';
 import { useQuery } from '@tanstack/react-query';
 import BlogContext from './BlogContext';
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 const App = () => {
-  const { state, dispatch } = useContext(BlogContext); 
+  const { state, dispatch } = useContext(BlogContext);
   const [hasDispatchedError, setHasDispatchedError] = useState(false);
   const token = blogService.getToken();
   const blogpostFormRef = useRef();
@@ -241,6 +242,15 @@ const App = () => {
       });
   };
 
+  function Home() {
+    if (state.user) return loggedInuser();
+    else return loginForm();
+  }
+
+  function Users() {
+    return <h2>Users</h2>;
+  }
+
   const loggedInuser = () => {
     console.log("User is logged in!");
     return (
@@ -268,11 +278,17 @@ const App = () => {
   };
   return (
     <>
-      {state.user && loggedInuser()}
-      {!state.user && loginForm()}
+      <BrowserRouter>
+        <Routes>
+          <Route path="users" element={<Users />} />
+          <Route path="/" element={<Home />} />
+        </Routes>
+      </BrowserRouter>
     </>
   );
+
 };
+
 
 export default App;
 

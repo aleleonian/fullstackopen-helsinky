@@ -8,7 +8,6 @@ const Blog = ({
   errorMessageAlert,
   successMessageAlert,
 }) => {
-  debugger;
   const [displayInfo, setDisplayInfo] = useState(false);
 
   const toggleShowInfo = () => {
