@@ -59,8 +59,6 @@ const App = () => {
     return <div>{state.errorMessage}</div>;
   }
 
-
-
   const handleLogin = async (event) => {
     event.preventDefault();
     try {
@@ -109,7 +107,7 @@ const App = () => {
             value={state.password}
             name="Password"
             data-testid="password"
-            onChange={({ target }) => ispatch({ type: 'SET_PASSWORD', payload: target.value })}
+            onChange={({ target }) => dispatch({ type: 'SET_PASSWORD', payload: target.value })}
           />
         </div>
         <button type="submit" onClick={handleLogin}>
@@ -119,12 +117,6 @@ const App = () => {
       {state.errorMessage && <Notification message={state.errorMessage} type="error" />}
     </>
   );
-
-  const logOut = () => {
-    window.localStorage.removeItem('loggedBlogpostAppUser');
-    blogService.setToken(null);
-    location.reload();
-  };
 
   const cleanup = () => {
     document.getElementById('title').value = '';
@@ -243,16 +235,20 @@ const App = () => {
   };
 
   function Home() {
-    if (state.user) return loggedInuser();
+    if (state.user) {
+      const blogListData = BlogList();
+      return (
+        <>
+          <LoginData />
+          {blogListData}
+        </>
+      )
+    }
     else return loginForm();
   }
 
-  function Users() {
-    return <h2>Users</h2>;
-  }
 
-  const loggedInuser = () => {
-    console.log("User is logged in!");
+  const BlogList = () => {
     return (
       <>
         <Notification message={state.successMessage} type="success" />
@@ -299,3 +295,28 @@ const Notification = ({ message, type }) => {
 
   return <div className={type}>{message}</div>;
 };
+
+const LoginData = () => {
+  const { state, dispatch } = useContext(BlogContext);
+  return (
+    <>
+      {state.user && state.user.name} is logged in <button onClick={logOut}>log out</button>
+    </>
+  );
+};
+
+const logOut = () => {
+  window.localStorage.removeItem('loggedBlogpostAppUser');
+  blogService.setToken(null);
+  location.reload();
+};
+
+
+function Users() {
+  return (
+    <>
+      <h2>Users</h2>
+      <LoginData />
+    </>
+  )
+}
