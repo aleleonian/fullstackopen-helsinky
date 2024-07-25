@@ -39,7 +39,7 @@ export const Home = () => {
                 'loggedBlogpostAppUser',
                 JSON.stringify(user)
             );
-            blogService.setToken(user.token);
+            loginService.setToken(user.token);
             dispatch(setUser(user));
             dispatch(setUsername(''));
             dispatch(setPassword(''));
@@ -53,7 +53,7 @@ export const Home = () => {
 
     const logOut = () => {
         window.localStorage.removeItem('loggedBlogpostAppUser');
-        blogService.setToken(null);
+        loginService.setToken(null);
         location.reload();
     };
 

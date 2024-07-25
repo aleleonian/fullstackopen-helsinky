@@ -27,7 +27,7 @@ if (process.env.NODE_ENV === 'test') {
 
 app.use(middleware.tokenExtractor);
 app.use('/api/blogposts', middleware.userExtractor, blogRouter);
-app.use('/api/users', usersRouter);
+app.use('/api/users', middleware.userExtractor, usersRouter);
 app.use('/api/login', loginRouter);
 app.use(middleware.unknownEndpoint);
 app.use(middleware.errorHandler);

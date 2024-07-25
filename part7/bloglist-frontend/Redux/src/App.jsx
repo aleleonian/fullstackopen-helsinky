@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import blogService from './services/blogs';
+import loginService from './services/login';
 import './assets/App.css';
 import { setUser, setErrorMessage, setBlogs } from './actions';
 import { useSelector, useDispatch } from 'react-redux';
@@ -36,7 +37,7 @@ const App = () => {
     let loggedUser = window.localStorage.getItem('loggedBlogpostAppUser');
     if (loggedUser) {
       loggedUser = JSON.parse(loggedUser);
-      blogService.setToken(loggedUser.token);
+      loginService.setToken(loggedUser.token);
       dispatch(setUser(loggedUser));
     }
   }, []);
