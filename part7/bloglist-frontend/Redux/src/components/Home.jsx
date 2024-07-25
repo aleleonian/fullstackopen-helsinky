@@ -1,4 +1,4 @@
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import React, { useRef } from 'react';
 
 import Blog from './Blog';
@@ -7,15 +7,15 @@ import blogService from '../services/blogs';
 import loginService from '../services/login';
 import { setUser, setUsername, setPassword, setErrorMessage, setSuccessMessage, setBlogs } from '../actions';
 
+const selectUser = (state) => state.user;
+
+const selectErrorMessage = (state) => state.errorMessage;
+const selectSuccessMessage = (state) => state.successMessage;
+const selectBlogs = (state) => state.blogs;
+const selectUsername = (state) => state.username;
+const selectPassword = (state) => state.password;
+
 export const Home = () => {
-
-    const selectUser = (state) => state.user;
-
-    const selectErrorMessage = (state) => state.errorMessage;
-    const selectSuccessMessage = (state) => state.successMessage;
-    const selectBlogs = (state) => state.blogs;
-    const selectUsername = (state) => state.username;
-    const selectPassword = (state) => state.password;
 
     const user = useSelector(selectUser);
     const errorMessage = useSelector(selectErrorMessage);
@@ -24,6 +24,7 @@ export const Home = () => {
     const username = useSelector(selectUsername);
     const password = useSelector(selectPassword);
     const blogpostFormRef = useRef();
+    const dispatch = useDispatch();
 
     /// functions 
 

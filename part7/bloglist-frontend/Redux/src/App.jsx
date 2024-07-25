@@ -43,7 +43,6 @@ const App = () => {
 
   return (
     <>
-    Hi from App.jsx
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/users" element={<Users />} />
