@@ -14,4 +14,13 @@ const getAll = async () => {
     return response.data;
 };
 
-export default { getAll };
+const getById = async (userId) => {
+    const config = {
+        headers: { Authorization: loginService.getToken() },
+      };
+
+    const response = await axios.get(baseUrl + `/${userId}`, config);
+    return response.data;
+};
+
+export default { getAll, getById };

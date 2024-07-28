@@ -7,6 +7,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Users } from './components/Users';
 import { Routes, Route } from 'react-router-dom'
 import { Home } from './components/Home';
+import { UserDetail } from './components/UserDetail';
 
 const selectUser = (state) => state.user;
 
@@ -48,6 +49,7 @@ const App = () => {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/users" element={<Users />} />
+        <Route path="/users/:id" element={<UserDetail />} />
       </Routes>
     </>
   );

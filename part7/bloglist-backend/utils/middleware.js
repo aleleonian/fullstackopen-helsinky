@@ -40,8 +40,6 @@ const tokenExtractor = (request, response, next) => {
 
 const userExtractor = (request, response, next) => {
 
-  console.log("userExtractor->request.token:", request.token);
-
   if (!request.token) {
     const missingTokenError = new Error();
     missingTokenError.name = 'MissingTokenError';
@@ -50,8 +48,6 @@ const userExtractor = (request, response, next) => {
   }
   const decodedToken = jwt.verify(request.token, process.env.SECRET);
 
-  console.log("decodedToken->", decodedToken);
-  
   if (!decodedToken.id) {
     const InvalidTokenError = new Error();
     InvalidTokenError.name = 'InvalidTokenError';

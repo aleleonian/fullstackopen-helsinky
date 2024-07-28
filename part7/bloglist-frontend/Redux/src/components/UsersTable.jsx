@@ -12,7 +12,7 @@ const UsersTable = ({ users }) => {
             <tbody>
                 {users.map((user) => (
                     <tr key={user.id}>
-                        <td>{user.username}</td>
+                        <td><h1><a href={`/users/${user.id}`}>{user.username}</a></h1></td>
                         <td>{user.blogposts.length}</td>
                     </tr>
                 ))}

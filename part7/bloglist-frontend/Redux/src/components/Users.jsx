@@ -52,12 +52,7 @@ export const Users = () => {
         <>
             <LoggedInUser user={user} />
             <h2>Users</h2>
-            
             <UsersTable users={users} />
-
-            {/* {users.map((user) => {
-                return <div key={user.id}>{user.username}</div>;
-            })} */}
         </>
     );
 };
