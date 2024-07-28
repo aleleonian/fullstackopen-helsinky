@@ -8,6 +8,7 @@ import { Users } from './components/Users';
 import { Routes, Route } from 'react-router-dom'
 import { Home } from './components/Home';
 import { UserDetail } from './components/UserDetail';
+import { BlogpostDetail } from './components/BlogpostDetail';
 
 const selectUser = (state) => state.user;
 
@@ -50,6 +51,7 @@ const App = () => {
         <Route path="/" element={<Home />} />
         <Route path="/users" element={<Users />} />
         <Route path="/users/:id" element={<UserDetail />} />
+        <Route path="/blogs/:id" element={<BlogpostDetail />} />
       </Routes>
     </>
   );

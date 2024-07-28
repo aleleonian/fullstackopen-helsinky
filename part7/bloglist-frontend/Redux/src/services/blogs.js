@@ -32,4 +32,14 @@ const remove = (data) => {
   };
   return axios.delete(`${baseUrl}/${data.id}`, config);
 };
-export default { getAll, create, update, remove };
+
+const getById = async (blogpostId) => {
+  const config = {
+      headers: { Authorization: loginService.getToken() },
+    };
+
+  const response = await axios.get(baseUrl + `/${blogpostId}`, config);
+  return response.data;
+};
+
+export default { getAll, create, update, remove, getById };

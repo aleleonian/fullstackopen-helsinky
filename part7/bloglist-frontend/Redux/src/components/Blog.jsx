@@ -45,7 +45,7 @@ const Blog = ({
 
   return (
     <div className="Blog" style={blogStyle}>
-      <div id="blogpost-title"> {blog.title}</div>{' '}
+      <div id="blogpost-title"> <a href={`/blogs/${blog.id}`}>{blog.title}</a></div>{' '}
       <button data-testid="view-hide-button" onClick={toggleShowInfo}>
         {!displayInfo ? 'view' : 'hide'}
       </button>
