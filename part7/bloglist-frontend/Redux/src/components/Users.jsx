@@ -12,7 +12,6 @@ export const Users = () => {
     const dispatch = useDispatch();
     const user = useSelector(selectUser);
     const [users, setUsers] = useState([]);
-    const [isChecked, setIsChecked] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
