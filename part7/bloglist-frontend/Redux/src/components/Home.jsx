@@ -165,7 +165,6 @@ export const Home = () => {
             <>
                 <Notification message={successMessage} type="success" />
                 <Notification message={errorMessage} type="error" />
-                <h2>blogs</h2>
                 <LoggedInUser user={user} />
                 <Form createBlogpost={newBlogpostHandler} reference={blogpostFormRef} />
                 {blogs.map((blog) => {

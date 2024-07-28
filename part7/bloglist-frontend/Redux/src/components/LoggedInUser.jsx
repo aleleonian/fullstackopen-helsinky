@@ -8,8 +8,8 @@ export const LoggedInUser = ({ user }) => {
     };
 
     return (
-        <>
+        <div>
             {user.name} is logged in <button onClick={logOut}>log out</button>
-        </>
+        </div>
     );
 };

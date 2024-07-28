@@ -40,10 +40,11 @@ const App = () => {
       loginService.setToken(loggedUser.token);
       dispatch(setUser(loggedUser));
     }
-  }, []);
+  }, [dispatch]);
 
   return (
     <>
+      <h2>blogs</h2>
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/users" element={<Users />} />
