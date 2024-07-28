@@ -3,6 +3,8 @@ import React, { useRef } from 'react';
 
 import Blog from './Blog';
 import { Form } from './Form';
+import { LoggedInUser } from './LoggedInUser';
+
 import blogService from '../services/blogs';
 import loginService from '../services/login';
 import { setUser, setUsername, setPassword, setErrorMessage, setSuccessMessage, setBlogs } from '../actions';
@@ -44,17 +46,13 @@ export const Home = () => {
             dispatch(setUsername(''));
             dispatch(setPassword(''));
         } catch (exception) {
-            dispatch(setErrorMessage('Wrong credentials'));
+            debugger;
+            let errorMsg = exception.message ? exception.message : "Wrong credentials";
+            dispatch(setErrorMessage(errorMsg));
             setTimeout(() => {
                 dispatch(setErrorMessage(null));
             }, 5000);
         }
-    };
-
-    const logOut = () => {
-        window.localStorage.removeItem('loggedBlogpostAppUser');
-        loginService.setToken(null);
-        location.reload();
     };
 
     const cleanup = () => {
@@ -162,13 +160,13 @@ export const Home = () => {
             });
     };
 
-    const loggedInuser = () => {
+    const showTheHome = () => {
         return (
             <>
                 <Notification message={successMessage} type="success" />
                 <Notification message={errorMessage} type="error" />
                 <h2>blogs</h2>
-                {user.name} is logged in <button onClick={logOut}>log out</button>
+                <LoggedInUser user={user} />
                 <Form createBlogpost={newBlogpostHandler} reference={blogpostFormRef} />
                 {blogs.map((blog) => {
                     return (
@@ -184,10 +182,10 @@ export const Home = () => {
                     );
                 })}
             </>
-        );
-    };
+        )
+    }
 
-    const loginForm = () => (
+    const showTheLoginForm = () => (
         <>
             <h1>Login to application</h1>
             <form onSubmit={handleLogin}>
@@ -232,8 +230,8 @@ export const Home = () => {
 
     return (
         <>
-            {user && loggedInuser()}
-            {!user && loginForm()}
+            {user && showTheHome()}
+            {!user && showTheLoginForm()}
         </>
     )
 } 
