@@ -3,16 +3,10 @@ import blogService from '../services/blogs';
 
 const Blog = ({
   blog,
-  increaseLikes,
   removeThisBlogpost,
   errorMessageAlert,
   successMessageAlert,
 }) => {
-  const [displayInfo, setDisplayInfo] = useState(false);
-
-  const toggleShowInfo = () => {
-    setDisplayInfo(!displayInfo);
-  };
 
   const removeBlogPost = (blogpost) => {
     if (confirm(`Do you really want to delete blogpost "${blogpost.title}"`)) {
@@ -41,15 +35,12 @@ const Blog = ({
     marginBottom: 5,
   };
 
-  let loggedUser = window.localStorage.getItem('loggedBlogpostAppUser');
+  // let loggedUser = window.localStorage.getItem('loggedBlogpostAppUser');
 
   return (
     <div className="Blog" style={blogStyle}>
       <div id="blogpost-title"> <a href={`/blogs/${blog.id}`}>{blog.title}</a></div>{' '}
-      <button data-testid="view-hide-button" onClick={toggleShowInfo}>
-        {!displayInfo ? 'view' : 'hide'}
-      </button>
-      {displayInfo && (
+      {/* {displayInfo && (
         <>
           <div>{blog.url}</div>
           <div>
@@ -74,7 +65,7 @@ const Blog = ({
               </div>
             )}
         </>
-      )}
+      )} */}
     </div>
   );
 };

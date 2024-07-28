@@ -9,6 +9,7 @@ import { Routes, Route } from 'react-router-dom'
 import { Home } from './components/Home';
 import { UserDetail } from './components/UserDetail';
 import { BlogpostDetail } from './components/BlogpostDetail';
+import { NotFound } from './components/NotFound';
 
 const selectUser = (state) => state.user;
 
@@ -52,6 +53,7 @@ const App = () => {
         <Route path="/users" element={<Users />} />
         <Route path="/users/:id" element={<UserDetail />} />
         <Route path="/blogs/:id" element={<BlogpostDetail />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </>
   );

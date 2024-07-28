@@ -111,15 +111,6 @@ export const Home = () => {
             });
     };
 
-    const updateThisBlogpost = (updatedBlogpost) => {
-        const desiredBlogIndex = blogs.findIndex(
-            (blog) => blog.id === updatedBlogpost.id
-        );
-        const newBlogpostsArray = [...blogs];
-        newBlogpostsArray[desiredBlogIndex] = updatedBlogpost;
-        dispatch(setBlogs(newBlogpostsArray));
-    };
-
     const removeThisBlogpost = (removedBlogpostId) => {
         const updatedBlogposts = [...blogs];
         const removedBpIndex = blogs.findIndex(
@@ -143,23 +134,6 @@ export const Home = () => {
         }, 5000);
     };
 
-    const increaseLikes = (blogObj) => {
-        blogService
-            .update(blogObj)
-            .then((response) => {
-                blogObj.likes = response.data.likes;
-                updateThisBlogpost(blogObj);
-            })
-            .catch((error) => {
-                errorMessageAlert(
-                    error.response.data.error ? error.response.data.error : error.message
-                );
-                setTimeout(() => {
-                    errorMessageAlert(null);
-                }, 5000);
-            });
-    };
-
     const showTheHome = () => {
         return (
             <>
@@ -172,8 +146,6 @@ export const Home = () => {
                         <Blog
                             key={blog.id}
                             blog={blog}
-                            increaseLikes={increaseLikes}
-                            updateThisBlogpost={updateThisBlogpost}
                             removeThisBlogpost={removeThisBlogpost}
                             errorMessageAlert={errorMessageAlert}
                             successMessageAlert={successMessageAlert}
