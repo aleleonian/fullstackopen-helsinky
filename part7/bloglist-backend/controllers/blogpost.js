@@ -12,6 +12,36 @@ blogRouter.get("/", async (request, response) => {
   response.json(blogPosts);
 });
 
+blogRouter.get('/:id', async (request, response) => {
+  try {
+
+    console.log("request.params.id->", request.params.id);
+    
+    const isValidObjectId = mongoose.Types.ObjectId.isValid(request.params.id);
+
+    let objectId;
+
+    if (isValidObjectId) {
+      objectId = new mongoose.Types.ObjectId(request.params.id);
+    } else {
+      console.error("Bad blog id");
+      response.status(400).end("Bad blog id");
+      return;
+    }
+    const blogpost = await Blogpost
+      .findById(objectId)
+    response.json(blogpost);
+
+    console.log("blogpost->", blogpost);
+    
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.log('error->', error);
+    response.status(500).json(error);
+  }
+});
+
+
 blogRouter.post("/", async (request, response, next) => {
   console.log("request.userId->", request.userId);
 
