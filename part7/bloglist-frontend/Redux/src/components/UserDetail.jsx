@@ -9,7 +9,6 @@ const selectUser = (state) => state.user;
 const selectErrorMessage = (state) => state.errorMessage;
 
 const Notification = ({ message, type }) => {
-    debugger;
     if (message === null) {
         return null;
     }
@@ -47,9 +46,6 @@ export const UserDetail = () => {
                 .catch((error) => {
                     console.log('Error fetching user details:', error);
                     dispatch(setErrorMessage(error.response.data));
-                    setTimeout(() => {
-                        dispatch(setErrorMessage(null));
-                    }, 5000);
                 });
         }
     }, [id, user, desiredUser, dispatch]);
