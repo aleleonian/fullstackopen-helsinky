@@ -27,6 +27,8 @@ const update = (data) => {
 };
 
 const remove = (data) => {
+  console.log("blogpost to be removed->", data);
+  
   const config = {
     headers: { Authorization: loginService.getToken() },
   };

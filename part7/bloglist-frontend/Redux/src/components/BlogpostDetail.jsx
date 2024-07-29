@@ -3,11 +3,12 @@ import { useParams } from 'react-router-dom';
 import blogService from '../services/blogs'; // Adjust the path as needed
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { setUser, setErrorMessage, setBlogs } from '../actions';
+import { setUser, setErrorMessage, setBlogs, setSuccessMessage } from '../actions';
 
 const selectUser = (state) => state.user;
 const selectErrorMessage = (state) => state.errorMessage;
 const selectBlogs = (state) => state.blogs;
+const selectSuccessMessage = (state) => state.successMessage;
 
 const Notification = ({ message, type }) => {
     if (message === null) {
@@ -43,16 +44,65 @@ const increaseLikes = (blogs, blogObj, dispatch) => {
             ));
         });
 };
+const successMessageAlert = (message, dispatch) => {
+    dispatch(setSuccessMessage(message));
+    setTimeout(() => {
+        dispatch(setSuccessMessage(null));
+    }, 5000);
+};
+
+const removeBlogPost = (blogpost, blogs, dispatch, setDesiredBlogpost, setLoadingMessage, navigate) => {
+    if (confirm(`Do you really want to delete blogpost "${blogpost.title}"`)) {
+        blogService
+            .remove(blogpost)
+            .then((response) => {
+                removeThisBlogpost(blogpost.id, blogs, dispatch, setDesiredBlogpost);
+                successMessageAlert('Blogpost removed allright!', dispatch);
+                setLoadingMessage(null);
+                navigate('/');
+            })
+            .catch((error) => {
+                debugger;
+                errorMessageAlert(
+                    error.response.data ? error.response.data.error : error.message,
+                    dispatch
+                );
+                setTimeout(() => {
+                    errorMessageAlert(null, dispatch);
+                }, 5000);
+            });
+    }
+};
+
+const removeThisBlogpost = (removedBlogpostId, blogs, dispatch, setDesiredBlogpost) => {
+    const updatedBlogposts = [...blogs];
+    const removedBpIndex = blogs.findIndex(
+        (blog) => blog.id === removedBlogpostId
+    );
+    updatedBlogposts.splice(removedBpIndex, 1);
+    setDesiredBlogpost(null);
+    dispatch(setBlogs(updatedBlogposts));
+};
+
+
+const errorMessageAlert = (message, dispatch) => {
+    dispatch(setErrorMessage(message));
+    setTimeout(() => {
+        dispatch(setErrorMessage(null));
+    }, 5000);
+};
 
 
 export const BlogpostDetail = () => {
     const { id } = useParams();
     const [desiredBlogpost, setDesiredBlogpost] = useState(null);
+    const [loadingMessage, setLoadingMessage] = useState("loading");
     const user = useSelector(selectUser);
     const errorMessage = useSelector(selectErrorMessage);
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const blogs = useSelector(selectBlogs);
+    const successMessage = useSelector(selectSuccessMessage);
 
 
     useEffect(() => {
@@ -84,13 +134,14 @@ export const BlogpostDetail = () => {
         return (
             <div>
                 {errorMessage && <Notification message={errorMessage} type="error" />}
-                {!errorMessage && "Loading..."}
+                {successMessage && <Notification message={successMessage} type="success" />}
+                {!errorMessage && loadingMessage}
             </div>
         );
     }
     return (
         <div>
-            {/* <Notification message={successMessage} type="success" /> */}
+            <Notification message={successMessage} type="success" />
             <Notification message={errorMessage} type="error" />
 
             <h1>{desiredBlogpost.title}</h1>
@@ -103,6 +154,14 @@ export const BlogpostDetail = () => {
                 >
                     like
                 </button>
+
+                <button
+                    data-testid="remove-button"
+                    onClick={() => removeBlogPost(desiredBlogpost, blogs, dispatch, setDesiredBlogpost, setLoadingMessage, navigate)}
+                >
+                    remove
+                </button>
+
             </div>
             <p>added by {desiredBlogpost.author}</p>
         </div>

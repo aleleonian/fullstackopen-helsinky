@@ -8,25 +8,6 @@ const Blog = ({
   successMessageAlert,
 }) => {
 
-  const removeBlogPost = (blogpost) => {
-    if (confirm(`Do you really want to delete blogpost "${blogpost.title}"`)) {
-      blogService
-        .remove(blogpost)
-        .then((response) => {
-          removeThisBlogpost(blogpost.id);
-          successMessageAlert('Blogpost removed allright!');
-        })
-        .catch((error) => {
-          errorMessageAlert(
-            error.response.data ? error.response.data.error : error.message
-          );
-          setTimeout(() => {
-            errorMessageAlert(null);
-          }, 5000);
-        });
-    }
-  };
-
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,

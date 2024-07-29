@@ -3,12 +3,14 @@ import { useParams } from 'react-router-dom';
 import userService from '../services/users'; // Adjust the path as needed
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { setUser, setErrorMessage } from '../actions';
+import { setUser, setErrorMessage, setSuccessMessage } from '../actions';
 
 const selectUser = (state) => state.user;
 const selectErrorMessage = (state) => state.errorMessage;
+const selectSuccessMessage = (state) => state.successMessage;
 
 const Notification = ({ message, type }) => {
+    
     if (message === null) {
         return null;
     }
@@ -21,6 +23,7 @@ export const UserDetail = () => {
     const [desiredUser, setDesiredUser] = useState(null);
     const user = useSelector(selectUser);
     const errorMessage = useSelector(selectErrorMessage);
+    const successMessage = useSelector(selectSuccessMessage);
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
@@ -54,13 +57,15 @@ export const UserDetail = () => {
         return (
             <div>
                 {errorMessage && <Notification message={errorMessage} type="error" />}
+                {successMessage && <Notification message={successMessage} type="success" />}
                 {!errorMessage && "Loading..."}
             </div>
         );
     }
+    
     return (
         <div>
-            {/* <Notification message={successMessage} type="success" /> */}
+            <Notification message={successMessage} type="success" />
             <Notification message={errorMessage} type="error" />
 
             <h1>{desiredUser.username}</h1>

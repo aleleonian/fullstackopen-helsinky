@@ -111,29 +111,6 @@ export const Home = () => {
             });
     };
 
-    const removeThisBlogpost = (removedBlogpostId) => {
-        const updatedBlogposts = [...blogs];
-        const removedBpIndex = blogs.findIndex(
-            (blog) => blog.id === removedBlogpostId
-        );
-        updatedBlogposts.splice(removedBpIndex, 1);
-        dispatch(setBlogs(updatedBlogposts));
-    };
-
-    const successMessageAlert = (message) => {
-        dispatch(setSuccessMessage(message));
-        setTimeout(() => {
-            dispatch(setSuccessMessage(null));
-        }, 5000);
-    };
-
-    const errorMessageAlert = (message) => {
-        dispatch(setErrorMessage(message));
-        setTimeout(() => {
-            dispatch(setErrorMessage(null));
-        }, 5000);
-    };
-
     const showTheHome = () => {
         return (
             <>
@@ -146,9 +123,6 @@ export const Home = () => {
                         <Blog
                             key={blog.id}
                             blog={blog}
-                            removeThisBlogpost={removeThisBlogpost}
-                            errorMessageAlert={errorMessageAlert}
-                            successMessageAlert={successMessageAlert}
                         />
                     );
                 })}
