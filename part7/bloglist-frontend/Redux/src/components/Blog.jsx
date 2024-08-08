@@ -1,11 +1,5 @@
-import { useState } from 'react';
-import blogService from '../services/blogs';
-
 const Blog = ({
   blog,
-  removeThisBlogpost,
-  errorMessageAlert,
-  successMessageAlert,
 }) => {
 
   const blogStyle = {
@@ -16,10 +10,11 @@ const Blog = ({
     marginBottom: 5,
   };
 
+  //style={blogStyle}
   // let loggedUser = window.localStorage.getItem('loggedBlogpostAppUser');
 
   return (
-    <div className="Blog" style={blogStyle}>
+    <div className="Blog">
       <div id="blogpost-title"> <a href={`/blogs/${blog.id}`}>{blog.title}</a></div>{' '}
       {/* {displayInfo && (
         <>

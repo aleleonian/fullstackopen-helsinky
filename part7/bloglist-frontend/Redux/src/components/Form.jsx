@@ -1,7 +1,7 @@
 import React from 'react';
 import Togglable from './Togglable';
 
-export const Form = ({ createBlogpost, reference }) => {
+export const NewBlogpostForm = ({ createBlogpost, reference }) => {
   return (
     <>
       <Togglable buttonLabel="Add new blogpost" ref={reference}>

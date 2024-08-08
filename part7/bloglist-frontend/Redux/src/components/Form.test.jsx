@@ -1,11 +1,11 @@
 import { render, screen, fireEvent } from '@testing-library/react';
-import { Form } from './Form';
+import { NewBlogpostForm } from './Form';
 
 test('Creates a new blogpost', async () => {
   // Mock handler function
   const newBlogpostHandler = vi.fn();
 
-  const { container } = render(<Form createBlogpost={newBlogpostHandler} />);
+  const { container } = render(<NewBlogpostForm createBlogpost={newBlogpostHandler} />);
 
   // Input values
   const values = {

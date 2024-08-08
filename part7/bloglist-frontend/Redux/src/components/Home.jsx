@@ -2,12 +2,11 @@ import { useSelector, useDispatch } from 'react-redux';
 import React, { useRef } from 'react';
 
 import Blog from './Blog';
-import { Form } from './Form';
-import { LoggedInUser } from './LoggedInUser';
-
+import { NewBlogpostForm } from './Form';
 import blogService from '../services/blogs';
 import loginService from '../services/login';
 import { setUser, setUsername, setPassword, setErrorMessage, setSuccessMessage, setBlogs } from '../actions';
+import { Table, Form, Button } from 'react-bootstrap'
 
 const selectUser = (state) => state.user;
 
@@ -116,47 +115,57 @@ export const Home = () => {
             <>
                 <Notification message={successMessage} type="success" />
                 <Notification message={errorMessage} type="error" />
-                <Form createBlogpost={newBlogpostHandler} reference={blogpostFormRef} />
-                {blogs.map((blog) => {
-                    return (
-                        <Blog
-                            key={blog.id}
-                            blog={blog}
-                        />
-                    );
-                })}
+                <br />
+                <Table striped>
+                    <tbody>
+                        {blogs.map((blog) => {
+                            return (
+                                <tr key={blog.id}>
+                                    <td>
+                                        <Blog
+                                            key={blog.id}
+                                            blog={blog}
+                                        />
+                                    </td>
+                                </tr>
+                            );
+                        })}
+                    </tbody>
+                </Table>
+                <br />
+                <NewBlogpostForm createBlogpost={newBlogpostHandler} reference={blogpostFormRef} />
             </>
         )
     }
 
     const showTheLoginForm = () => (
         <>
-            <h1>Login to application</h1>
-            <form onSubmit={handleLogin}>
-                <div>
-                    username
-                    <input
+            <h4>Login to application</h4>
+            <Form onSubmit={handleLogin}>
+                <Form.Group>
+                    <Form.Label>username:</Form.Label>
+                    <Form.Control
                         type="text"
+                        name="username"
                         value={username}
-                        name="Username"
                         data-testid="username"
                         onChange={({ target }) => dispatch(setUsername(target.value))}
                     />
-                </div>
-                <div>
-                    password
-                    <input
+                </Form.Group>
+                <Form.Group>
+                    <Form.Label>password:</Form.Label>
+                    <Form.Control
                         type="password"
-                        value={password}
                         name="Password"
+                        value={password}
                         data-testid="password"
                         onChange={({ target }) => dispatch(setPassword(target.value))}
                     />
-                </div>
-                <button type="submit" onClick={handleLogin}>
+                </Form.Group>
+                <Button type="submit" onClick={handleLogin}>
                     login
-                </button>
-            </form>
+                </Button>
+            </Form>
             {errorMessage && <Notification message={errorMessage} type="error" />}
         </>
     );
@@ -168,9 +177,6 @@ export const Home = () => {
 
         return <div className={type}>{message}</div>;
     };
-
-    /// functions 
-
 
     return (
         <>

@@ -11,7 +11,6 @@ import { UserDetail } from './components/UserDetail';
 import { BlogpostDetail } from './components/BlogpostDetail';
 import { NotFound } from './components/NotFound';
 import { NavBar } from './components/NavBar';
-
 const selectUser = (state) => state.user;
 
 const App = () => {
@@ -47,9 +46,10 @@ const App = () => {
   }, [dispatch]);
 
   return (
-    <>
-      <h2>blogs</h2>
+    <div className="container">
       <NavBar />
+      <br />
+      <h2>Blogs App</h2>
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/users" element={<Users />} />
@@ -57,7 +57,7 @@ const App = () => {
         <Route path="/blogs/:id" element={<BlogpostDetail />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
-    </>
+    </div>
   );
 };
 

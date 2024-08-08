@@ -106,12 +106,12 @@ const showComments = (comments) => {
 
 }
 
-const addComment = (blogId, updateBlogpostFunction, currentBlogpost) => {
+const addComment = (blogId, updateBlogpostFunction, currentBlogpost, dispatch) => {
     //blogid is sometimes undefined and i don't know why
     if (!blogId) return;
     const comment = document.getElementById("newComment").value;
     if (!comment || comment.length < 1) {
-        alert('you gotta input something, bro.');
+        errorMessageAlert('You gotta input something, bro.', dispatch);
         return;
     }
     else {
@@ -122,21 +122,23 @@ const addComment = (blogId, updateBlogpostFunction, currentBlogpost) => {
                 updatedBlogpost.comments.push(comment)
                 updateBlogpostFunction(updatedBlogpost);
                 document.getElementById("newComment").value = "";
-                alert("comment added!");
+                successMessageAlert('Comment added!', dispatch);
             })
             .catch(error => {
                 console.log(error);
-                alert(error)
+                errorMessageAlert(error, dispatch);
             })
     }
 }
-const handleKeyPress = (event, blogId, updateBlogpostFunction, currentBlogpost) => {
+const handleKeyPress = (event, blogId, updateBlogpostFunction, currentBlogpost, dispatch) => {
     if (event.key === 'Enter') {
-        addComment(blogId, updateBlogpostFunction, currentBlogpost);
+        addComment(blogId, updateBlogpostFunction, currentBlogpost, dispatch);
     }
 };
 
 const Comments = ({ comments, blogId, updateBlogpostFunction, currentBlogpost }) => {
+    const dispatch = useDispatch();
+
     return (
         <>
             <h2>Comments</h2>
@@ -144,10 +146,10 @@ const Comments = ({ comments, blogId, updateBlogpostFunction, currentBlogpost })
             <input
                 type="text"
                 id="newComment"
-                onKeyPress={() => { handleKeyPress(event, blogId, updateBlogpostFunction, currentBlogpost) }}
+                onKeyPress={() => { handleKeyPress(event, blogId, updateBlogpostFunction, currentBlogpost, dispatch) }}
             />
             &nbsp;
-            <button onClick={() => addComment(blogId, updateBlogpostFunction, currentBlogpost)}>Add comment</button>
+            <button onClick={() => addComment(blogId, updateBlogpostFunction, currentBlogpost, dispatch)}>Add comment</button>
         </>
     )
 }
