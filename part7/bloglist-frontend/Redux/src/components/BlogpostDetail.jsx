@@ -62,7 +62,6 @@ const removeBlogPost = (blogpost, blogs, dispatch, setDesiredBlogpost, setLoadin
                 navigate('/');
             })
             .catch((error) => {
-                debugger;
                 errorMessageAlert(
                     error.response.data ? error.response.data.error : error.message,
                     dispatch
@@ -94,8 +93,9 @@ const errorMessageAlert = (message, dispatch) => {
 
 const showComments = (comments) => {
     if (comments.length > 0) {
-        const jsxComments = comments.map(comment => <li>{comment}</li>);
-        return (
+        const jsxComments = comments.map((comment, index) => (
+            <li key={index}>{comment}</li>
+        )); return (
             <>
                 <ul>
                     {jsxComments}
@@ -106,7 +106,9 @@ const showComments = (comments) => {
 
 }
 
-const addComment = (blogId) => {
+const addComment = (blogId, updateBlogpostFunction, currentBlogpost) => {
+    //blogid is sometimes undefined and i don't know why
+    if (!blogId) return;
     const comment = document.getElementById("newComment").value;
     if (!comment || comment.length < 1) {
         alert('you gotta input something, bro.');
@@ -116,22 +118,25 @@ const addComment = (blogId) => {
         blogService.addComment(blogId, comment)
             .then(response => {
                 console.log(response);
+                const updatedBlogpost = { ...currentBlogpost };
+                updatedBlogpost.comments.push(comment)
+                updateBlogpostFunction(updatedBlogpost);
+                document.getElementById("newComment").value = "";
                 alert("comment added!");
             })
             .catch(error => {
                 console.log(error);
                 alert(error)
-                debugger;
             })
     }
 }
-const handleKeyPress = (event) => {
+const handleKeyPress = (event, blogId, updateBlogpostFunction, currentBlogpost) => {
     if (event.key === 'Enter') {
-        addComment();
+        addComment(blogId, updateBlogpostFunction, currentBlogpost);
     }
 };
 
-const Comments = ({ comments, blogId }) => {
+const Comments = ({ comments, blogId, updateBlogpostFunction, currentBlogpost }) => {
     return (
         <>
             <h2>Comments</h2>
@@ -139,10 +144,10 @@ const Comments = ({ comments, blogId }) => {
             <input
                 type="text"
                 id="newComment"
-                onKeyPress={handleKeyPress}
+                onKeyPress={() => { handleKeyPress(event, blogId, updateBlogpostFunction, currentBlogpost) }}
             />
             &nbsp;
-            <button onClick={() => addComment(blogId)}>Add comment</button>
+            <button onClick={() => addComment(blogId, updateBlogpostFunction, currentBlogpost)}>Add comment</button>
         </>
     )
 }
@@ -150,7 +155,6 @@ export const BlogpostDetail = () => {
     const { id } = useParams();
     const [desiredBlogpost, setDesiredBlogpost] = useState(null);
     const [loadingMessage, setLoadingMessage] = useState("loading");
-    const [blogpostId, setBlogpostId] = useState(id);
     const user = useSelector(selectUser);
     const errorMessage = useSelector(selectErrorMessage);
     const navigate = useNavigate();
@@ -173,7 +177,7 @@ export const BlogpostDetail = () => {
 
     useEffect(() => {
         if (user && !desiredBlogpost) {
-            blogService.getById(blogpostId)
+            blogService.getById(id)
                 .then((blogpost) => {
                     setDesiredBlogpost(blogpost);
                 })
@@ -182,7 +186,7 @@ export const BlogpostDetail = () => {
                     dispatch(setErrorMessage(error.response.data));
                 });
         }
-    }, [blogpostId, user, desiredBlogpost, dispatch]);
+    }, [id, user, desiredBlogpost, dispatch]);
 
     if (!desiredBlogpost) {
         return (
@@ -218,7 +222,12 @@ export const BlogpostDetail = () => {
 
             </div>
             <p>added by {desiredBlogpost.author}</p>
-            <Comments comments={desiredBlogpost.comments} blogId={blogpostId} />
+            <Comments
+                comments={desiredBlogpost.comments}
+                blogId={desiredBlogpost.id}
+                updateBlogpostFunction={setDesiredBlogpost}
+                currentBlogpost={desiredBlogpost}
+            />
         </div>
     );
 };
