@@ -49,7 +49,6 @@ export const Users = () => {
     }
     return (
         <>
-            <LoggedInUser user={user} />
             <h2>Users</h2>
             <UsersTable users={users} />
         </>

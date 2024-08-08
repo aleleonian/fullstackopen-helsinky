@@ -10,6 +10,7 @@ import { Home } from './components/Home';
 import { UserDetail } from './components/UserDetail';
 import { BlogpostDetail } from './components/BlogpostDetail';
 import { NotFound } from './components/NotFound';
+import { NavBar } from './components/NavBar';
 
 const selectUser = (state) => state.user;
 
@@ -48,6 +49,7 @@ const App = () => {
   return (
     <>
       <h2>blogs</h2>
+      <NavBar />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/users" element={<Users />} />

@@ -22,12 +22,4 @@ const logOut = () => {
   location.reload();
 };
 
-const loggedInuser = (user) => {
-  return (
-    <>
-      {user.name} is logged in <button onClick={logOut}>log out</button>
-    </>
-  );
-};
-
-export default { login, setToken, getToken, logOut, loggedInuser };
+export default { login, setToken, getToken, logOut };
