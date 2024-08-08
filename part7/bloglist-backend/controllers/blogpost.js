@@ -15,8 +15,6 @@ blogRouter.get("/", async (request, response) => {
 blogRouter.get('/:id', async (request, response) => {
   try {
 
-    console.log("request.params.id->", request.params.id);
-    
     const isValidObjectId = mongoose.Types.ObjectId.isValid(request.params.id);
 
     let objectId;
@@ -32,8 +30,6 @@ blogRouter.get('/:id', async (request, response) => {
       .findById(objectId)
     response.json(blogpost);
 
-    console.log("blogpost->", blogpost);
-    
   } catch (error) {
     // eslint-disable-next-line no-console
     console.log('error->', error);
@@ -72,6 +68,58 @@ blogRouter.post("/", async (request, response, next) => {
     return response.status(201).json(savedBlogpost);
   } catch (error) {
     return next(error);
+  }
+});
+blogRouter.post("/:id/comments", async (request, response, next) => {
+
+  //make sure that blogpost exists
+  //update the comments array
+
+  console.log("request.params.id->", request.params.id);
+
+  const isValidObjectId = mongoose.Types.ObjectId.isValid(request.params.id);
+
+  let objectId;
+
+  if (isValidObjectId) {
+    objectId = new mongoose.Types.ObjectId(request.params.id);
+  } else {
+    // eslint-disable-next-line no-console
+    console.error("Invalid ObjectId format");
+    return response.status(400).end();
+  }
+
+  const newComment = request.body.comment;
+
+  // Make sure the newComment is valid
+  if (!newComment) {
+    return response.status(400).json({ error: "No comment provided" });
+  }
+
+  console.log("newComment->", newComment);
+
+  try {
+
+    // Update the comments array
+    const updatedBlogpost = await Blogpost.findByIdAndUpdate(
+      objectId,
+      { $push: { comments: newComment } },
+      { new: true, runValidators: true } // Ensure it returns the updated document
+    );
+
+    if (!updatedBlogpost) {
+      const invalidBlogpostIdError = new Error("Could not find blogpost with that id.");
+      invalidBlogpostIdError.name = "InvalidBlogpostIdError";
+      return next(invalidBlogpostIdError);
+    }
+
+    response.json(updatedBlogpost);
+    console.log("blogpost updated allright->", updatedBlogpost);
+    
+  } catch (error) {
+    next(error);
+    // eslint-disable-next-line no-console
+    console.log(error);
   }
 });
 

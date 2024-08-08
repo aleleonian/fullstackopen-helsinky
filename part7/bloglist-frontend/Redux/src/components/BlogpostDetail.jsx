@@ -92,11 +92,65 @@ const errorMessageAlert = (message, dispatch) => {
     }, 5000);
 };
 
+const showComments = (comments) => {
+    if (comments.length > 0) {
+        const jsxComments = comments.map(comment => <li>{comment}</li>);
+        return (
+            <>
+                <ul>
+                    {jsxComments}
+                </ul>
+            </>
+        )
+    }
 
+}
+
+const addComment = (blogId) => {
+    const comment = document.getElementById("newComment").value;
+    if (!comment || comment.length < 1) {
+        alert('you gotta input something, bro.');
+        return;
+    }
+    else {
+        blogService.addComment(blogId, comment)
+            .then(response => {
+                console.log(response);
+                alert("comment added!");
+            })
+            .catch(error => {
+                console.log(error);
+                alert(error)
+                debugger;
+            })
+    }
+}
+const handleKeyPress = (event) => {
+    if (event.key === 'Enter') {
+        addComment();
+    }
+};
+
+const Comments = ({ comments, blogId }) => {
+    return (
+        <>
+            <h2>Comments</h2>
+            {comments && showComments(comments)}
+            <input
+                type="text"
+                id="newComment"
+                onKeyPress={handleKeyPress}
+            />
+            &nbsp;
+            <button onClick={() => addComment(blogId)}>Add comment</button>
+        </>
+    )
+}
 export const BlogpostDetail = () => {
     const { id } = useParams();
     const [desiredBlogpost, setDesiredBlogpost] = useState(null);
     const [loadingMessage, setLoadingMessage] = useState("loading");
+    const [blogpostId, setBlogpostId] = useState(id);
     const user = useSelector(selectUser);
     const errorMessage = useSelector(selectErrorMessage);
     const navigate = useNavigate();
@@ -119,7 +173,7 @@ export const BlogpostDetail = () => {
 
     useEffect(() => {
         if (user && !desiredBlogpost) {
-            blogService.getById(id)
+            blogService.getById(blogpostId)
                 .then((blogpost) => {
                     setDesiredBlogpost(blogpost);
                 })
@@ -128,7 +182,7 @@ export const BlogpostDetail = () => {
                     dispatch(setErrorMessage(error.response.data));
                 });
         }
-    }, [id, user, desiredBlogpost, dispatch]);
+    }, [blogpostId, user, desiredBlogpost, dispatch]);
 
     if (!desiredBlogpost) {
         return (
@@ -164,6 +218,7 @@ export const BlogpostDetail = () => {
 
             </div>
             <p>added by {desiredBlogpost.author}</p>
+            <Comments comments={desiredBlogpost.comments} blogId={blogpostId} />
         </div>
     );
 };
