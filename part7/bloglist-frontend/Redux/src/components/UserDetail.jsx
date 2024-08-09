@@ -5,6 +5,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { setUser, setErrorMessage, setSuccessMessage } from '../actions';
 import { Notification } from "./Notification";
+import ListGroup from 'react-bootstrap/ListGroup';
 
 const selectUser = (state) => state.user;
 const selectErrorMessage = (state) => state.errorMessage;
@@ -54,7 +55,7 @@ export const UserDetail = () => {
             </div>
         );
     }
-    
+
     return (
         <div>
             <Notification message={successMessage} type="success" />
@@ -62,10 +63,15 @@ export const UserDetail = () => {
 
             <h1>{desiredUser.username}</h1>
             <p>{desiredUser.email}</p>
-            <p>added blogs:</p>
-            <ul>
-                {desiredUser.blogposts.map(blog => <li key={blog.id}>{blog.title}</li>)}
-            </ul>
+            <p>Added blogs:</p>
+            <ListGroup>
+                {desiredUser.blogposts.length > 0 && desiredUser.blogposts.map(blog => <ListGroup.Item key={blog.id}>
+                    <a href={`/blogs/${blog.id}`}>
+                        {blog.title}
+                    </a>
+                </ListGroup.Item>)}
+                {desiredUser.blogposts.length === 0 && "No blogs added by this user."}
+            </ListGroup>
         </div>
     );
 };

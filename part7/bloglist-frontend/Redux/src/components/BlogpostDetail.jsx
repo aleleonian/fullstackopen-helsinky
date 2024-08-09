@@ -5,6 +5,8 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { setUser, setErrorMessage, setBlogs, setSuccessMessage } from '../actions';
 import { Notification } from "./Notification";
+import { Button } from 'react-bootstrap';
+import ListGroup from 'react-bootstrap/ListGroup';
 
 const selectUser = (state) => state.user;
 const selectErrorMessage = (state) => state.errorMessage;
@@ -87,12 +89,12 @@ const errorMessageAlert = (message, dispatch) => {
 const showComments = (comments) => {
     if (comments.length > 0) {
         const jsxComments = comments.map((comment, index) => (
-            <li key={index}>{comment}</li>
+            <ListGroup.Item key={index}>{comment}</ListGroup.Item>
         )); return (
             <>
-                <ul>
+                <ListGroup>
                     {jsxComments}
-                </ul>
+                </ListGroup>
             </>
         )
     }
@@ -136,13 +138,14 @@ const Comments = ({ comments, blogId, updateBlogpostFunction, currentBlogpost })
         <>
             <h2>Comments</h2>
             {comments && showComments(comments)}
+            <br />
             <input
                 type="text"
                 id="newComment"
                 onKeyPress={() => { handleKeyPress(event, blogId, updateBlogpostFunction, currentBlogpost, dispatch) }}
             />
             &nbsp;
-            <button onClick={() => addComment(blogId, updateBlogpostFunction, currentBlogpost, dispatch)}>Add comment</button>
+            <Button onClick={() => addComment(blogId, updateBlogpostFunction, currentBlogpost, dispatch)}>Add comment</Button>
         </>
     )
 }
@@ -201,19 +204,22 @@ export const BlogpostDetail = () => {
             <p>{desiredBlogpost.url}</p>
             <div>
                 {desiredBlogpost.likes} likes
-                <button
+                <Button
+                    className='button-class'
+                    variant='success'
                     data-testid="like-button"
                     onClick={() => increaseLikes(blogs, desiredBlogpost, dispatch)}
                 >
                     like
-                </button>
+                </Button>
 
-                <button
+                <Button
+                    variant='danger'
                     data-testid="remove-button"
                     onClick={() => removeBlogPost(desiredBlogpost, blogs, dispatch, setDesiredBlogpost, setLoadingMessage, navigate)}
                 >
-                    remove
-                </button>
+                    Remove
+                </Button>
 
             </div>
             <p>added by {desiredBlogpost.author}</p>

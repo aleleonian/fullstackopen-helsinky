@@ -1,23 +1,24 @@
 import React from 'react';
+import { Table } from 'react-bootstrap'
 
 const UsersTable = ({ users }) => {
     return (
-        <table>
+        <Table striped>
             <thead>
                 <tr>
-                    <th></th>
-                    <th>blogs created</th>
+                    <th>Username</th>
+                    <th>Blogs created</th>
                 </tr>
             </thead>
             <tbody>
                 {users.map((user) => (
                     <tr key={user.id}>
-                        <td><h1><a href={`/users/${user.id}`}>{user.username}</a></h1></td>
+                        <td><h5><a href={`/users/${user.id}`}>{user.username}</a></h5></td>
                         <td>{user.blogposts.length}</td>
                     </tr>
                 ))}
             </tbody>
-        </table>
+        </Table>
     );
 };
 

@@ -3,7 +3,6 @@ import { useSelector, useDispatch } from 'react-redux';
 import usersService from '../services/users';
 import { setErrorMessage, setUser } from '../actions';
 import { useNavigate } from 'react-router-dom';
-import { LoggedInUser } from './LoggedInUser';
 import UsersTable from './UsersTable'; // Adjust the path as needed
 
 const selectUser = (state) => state.user;
