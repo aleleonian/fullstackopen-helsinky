@@ -4,19 +4,12 @@ import blogService from '../services/blogs'; // Adjust the path as needed
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { setUser, setErrorMessage, setBlogs, setSuccessMessage } from '../actions';
+import { Notification } from "./Notification";
 
 const selectUser = (state) => state.user;
 const selectErrorMessage = (state) => state.errorMessage;
 const selectBlogs = (state) => state.blogs;
 const selectSuccessMessage = (state) => state.successMessage;
-
-const Notification = ({ message, type }) => {
-    if (message === null) {
-        return null;
-    }
-
-    return <div className={type}>{message}</div>;
-};
 
 const updateThisBlogpost = (blogs, updatedBlogpost, dispatch) => {
 
@@ -193,7 +186,7 @@ export const BlogpostDetail = () => {
     if (!desiredBlogpost) {
         return (
             <div>
-                {errorMessage && <Notification message={errorMessage} type="error" />}
+                {errorMessage && <Notification message={errorMessage} type="danger" />}
                 {successMessage && <Notification message={successMessage} type="success" />}
                 {!errorMessage && loadingMessage}
             </div>
@@ -202,7 +195,7 @@ export const BlogpostDetail = () => {
     return (
         <div>
             <Notification message={successMessage} type="success" />
-            <Notification message={errorMessage} type="error" />
+            <Notification message={errorMessage} type="danger" />
 
             <h1>{desiredBlogpost.title}</h1>
             <p>{desiredBlogpost.url}</p>

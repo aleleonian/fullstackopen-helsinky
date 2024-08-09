@@ -19,3 +19,8 @@
 .nav-bar {
   background-color: rgb(207, 204, 204);
 }
+
+.login-button {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}

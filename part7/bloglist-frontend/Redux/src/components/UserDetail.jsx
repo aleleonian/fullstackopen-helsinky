@@ -4,19 +4,11 @@ import userService from '../services/users'; // Adjust the path as needed
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { setUser, setErrorMessage, setSuccessMessage } from '../actions';
+import { Notification } from "./Notification";
 
 const selectUser = (state) => state.user;
 const selectErrorMessage = (state) => state.errorMessage;
 const selectSuccessMessage = (state) => state.successMessage;
-
-const Notification = ({ message, type }) => {
-    
-    if (message === null) {
-        return null;
-    }
-
-    return <div className={type}>{message}</div>;
-};
 
 export const UserDetail = () => {
     const { id } = useParams();
@@ -56,7 +48,7 @@ export const UserDetail = () => {
     if (!desiredUser) {
         return (
             <div>
-                {errorMessage && <Notification message={errorMessage} type="error" />}
+                {errorMessage && <Notification message={errorMessage} type="danger" />}
                 {successMessage && <Notification message={successMessage} type="success" />}
                 {!errorMessage && "Loading..."}
             </div>
@@ -66,7 +58,7 @@ export const UserDetail = () => {
     return (
         <div>
             <Notification message={successMessage} type="success" />
-            <Notification message={errorMessage} type="error" />
+            <Notification message={errorMessage} type="danger" />
 
             <h1>{desiredUser.username}</h1>
             <p>{desiredUser.email}</p>

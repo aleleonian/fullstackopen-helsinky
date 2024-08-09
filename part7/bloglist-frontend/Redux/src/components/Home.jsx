@@ -7,6 +7,7 @@ import blogService from '../services/blogs';
 import loginService from '../services/login';
 import { setUser, setUsername, setPassword, setErrorMessage, setSuccessMessage, setBlogs } from '../actions';
 import { Table, Form, Button } from 'react-bootstrap'
+import { Notification } from "./Notification";
 
 const selectUser = (state) => state.user;
 
@@ -114,7 +115,7 @@ export const Home = () => {
         return (
             <>
                 <Notification message={successMessage} type="success" />
-                <Notification message={errorMessage} type="error" />
+                <Notification message={errorMessage} type="danger" />
                 <br />
                 <Table striped>
                     <tbody>
@@ -162,21 +163,14 @@ export const Home = () => {
                         onChange={({ target }) => dispatch(setPassword(target.value))}
                     />
                 </Form.Group>
-                <Button type="submit" onClick={handleLogin}>
+
+                <Button className="login-button" type="submit" onClick={handleLogin}>
                     login
                 </Button>
             </Form>
-            {errorMessage && <Notification message={errorMessage} type="error" />}
+            {errorMessage && <Notification message={errorMessage} type="danger" />}
         </>
     );
-
-    const Notification = ({ message, type }) => {
-        if (message === null) {
-            return null;
-        }
-
-        return <div className={type}>{message}</div>;
-    };
 
     return (
         <>
