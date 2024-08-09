@@ -164,7 +164,7 @@ export const Home = () => {
                     />
                 </Form.Group>
 
-                <Button className="login-button" type="submit" onClick={handleLogin}>
+                <Button className="button-class" type="submit" onClick={handleLogin}>
                     login
                 </Button>
             </Form>
