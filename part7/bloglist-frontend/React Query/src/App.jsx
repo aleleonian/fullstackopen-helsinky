@@ -7,8 +7,9 @@ import './assets/App.css';
 import { useQuery } from '@tanstack/react-query';
 import BlogContext from './BlogContext';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { Table, Form, Button } from 'react-bootstrap'
+import { Form, Button } from 'react-bootstrap'
 import { Notification } from './components/Notification';
+import { NavBar } from "./components/NavBar";
 
 const App = () => {
   const { state, dispatch } = useContext(BlogContext);
@@ -275,6 +276,7 @@ const App = () => {
   };
   return (
     <div className="container">
+      <NavBar />
       <BrowserRouter>
         <Routes>
           <Route path="users" element={<Users />} />
