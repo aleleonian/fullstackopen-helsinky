@@ -3,8 +3,6 @@ import blogs from './services/blogs';
 
 const initialState = {
   user: null,
-  username: '',
-  password: '',
   errorMessage: null,
   successMessage: null,
   blogs:[]
@@ -12,12 +10,8 @@ const initialState = {
 
 const BlogReducer = (state = initialState, action) => {
   switch (action.type) {
-    case 'SET_USERNAME':
-      return { ...state, username: action.payload };
     case 'SET_USER':
       return { ...state, user: action.payload };
-    case 'SET_PASSWORD':
-      return { ...state, password: action.payload };
     case 'SET_ERROR_MESSAGE':
       return { ...state, errorMessage: action.payload };
     case 'SET_SUCCESS_MESSAGE':

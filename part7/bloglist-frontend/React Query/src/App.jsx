@@ -2,11 +2,13 @@ import { useState, useEffect, useRef, useContext } from 'react';
 import blogService from './services/blogs';
 import loginService from './services/login';
 import Blog from './components/Blog';
-import { Form } from './components/Form';
+import { NewBlogpostForm } from './components/NewBlogpostForm';
 import './assets/App.css';
 import { useQuery } from '@tanstack/react-query';
 import BlogContext from './BlogContext';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Table, Form, Button } from 'react-bootstrap'
+import { Notification } from './components/Notification';
 
 const App = () => {
   const { state, dispatch } = useContext(BlogContext);
@@ -59,12 +61,9 @@ const App = () => {
     return <div>{state.errorMessage}</div>;
   }
 
-  const handleLogin = async (event) => {
+  const handleLogin = async (event, username, password) => {
     event.preventDefault();
     try {
-      const username = state.username;
-      const password = state.password;
-
       const user = await loginService.login({
         username,
         password,
@@ -75,8 +74,6 @@ const App = () => {
       );
       blogService.setToken(user.token);
       dispatch({ type: 'SET_USER', payload: user });
-      dispatch({ type: 'SET_USERNAME', payload: '' });
-      dispatch({ type: 'SET_PASSWORD', payload: '' });
     } catch (exception) {
       const message = exception.response.status === 401 ? "Wrong credentials!" : exception.message
       dispatch({ type: 'SET_ERROR_MESSAGE', payload: message });
@@ -86,37 +83,41 @@ const App = () => {
     }
   };
 
-  const loginForm = () => (
-    <>
-      <h1>Login to application</h1>
-      <form onSubmit={handleLogin}>
-        <div>
-          username
-          <input
-            type="text"
-            value={state.username}
-            name="Username"
-            data-testid="username"
-            onChange={({ target }) => dispatch({ type: 'SET_USERNAME', payload: target.value })}
-          />
-        </div>
-        <div>
-          password
-          <input
-            type="password"
-            value={state.password}
-            name="Password"
-            data-testid="password"
-            onChange={({ target }) => dispatch({ type: 'SET_PASSWORD', payload: target.value })}
-          />
-        </div>
-        <button type="submit" onClick={handleLogin}>
-          login
-        </button>
-      </form>
-      {state.errorMessage && <Notification message={state.errorMessage} type="error" />}
-    </>
-  );
+  const loginForm = () => {
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
+    return (
+      <>
+        <br />
+        <h4>Login to application</h4>
+        <Form onSubmit={handleLogin}>
+          <Form.Group>
+            <Form.Label>username:</Form.Label>
+            <Form.Control
+              type="text"
+              name="username"
+              value={username}
+              onChange={({ target }) => setUsername(target.value)}
+            />
+          </Form.Group>
+          <Form.Group>
+            <Form.Label>password:</Form.Label>
+            <Form.Control
+              type="password"
+              name="Password"
+              value={password}
+              onChange={({ target }) => setPassword(target.value)}
+            />
+          </Form.Group>
+
+          <Button className="top-bottom-margin-10px" type="submit" onClick={() => { handleLogin(event, username, password) }}>
+            login
+          </Button>
+        </Form>
+        {state.errorMessage && <Notification message={state.errorMessage} type="danger" />}
+      </>
+    )
+  }
 
   const cleanup = () => {
     document.getElementById('title').value = '';
@@ -255,7 +256,7 @@ const App = () => {
         <Notification message={state.errorMessage} type="error" />
         <h2>blogs</h2>
         {state.user.name} is logged in <button onClick={logOut}>log out</button>
-        <Form createBlogpost={newBlogpostHandler} reference={blogpostFormRef} />
+        <NewBlogpostForm createBlogpost={newBlogpostHandler} reference={blogpostFormRef} />
         {state.blogs.map((blog) => {
           return (
             <Blog
@@ -273,28 +274,20 @@ const App = () => {
     );
   };
   return (
-    <>
+    <div className="container">
       <BrowserRouter>
         <Routes>
           <Route path="users" element={<Users />} />
           <Route path="/" element={<Home />} />
         </Routes>
       </BrowserRouter>
-    </>
+    </div>
   );
 
 };
 
 
 export default App;
-
-const Notification = ({ message, type }) => {
-  if (message === null) {
-    return null;
-  }
-
-  return <div className={type}>{message}</div>;
-};
 
 const LoginData = () => {
   const { state, dispatch } = useContext(BlogContext);
