@@ -4,6 +4,7 @@ import { Notification } from './Notification';
 import { NewBlogpostForm } from './NewBlogpostForm';
 import loginService from '../services/login';
 import Blog from './Blog';
+import { errorMessageAlert, successMessageAlert } from "../library/alerts";
 
 const newBlogpostHandler = (event) => {
     event.preventDefault();
@@ -103,24 +104,6 @@ const removeThisBlogpost = (removedBlogpostId) => {
     );
     updatedBlogposts.splice(removedBpIndex, 1);
     dispatch({ type: 'SET_BLOGS', payload: updatedBlogposts });
-};
-
-const successMessageAlert = (message) => {
-    dispatch({ type: 'SET_SUCCESS_MESSAGE', payload: message });
-    setTimeout(() => {
-        dispatch({ type: 'SET_SUCCESS_MESSAGE', payload: null });
-    }, 5000);
-};
-
-const errorMessageAlert = (message) => {
-    dispatch({
-        type: 'SET_ERROR_MESSAGE', payload: message
-    });
-    setTimeout(() => {
-        dispatch({
-            type: 'SET_ERROR_MESSAGE', payload: null
-        });
-    }, 5000);
 };
 
 export const BlogList = () => {
