@@ -1,21 +1,17 @@
 import { useState, useEffect, useRef, useContext } from 'react';
 import blogService from './services/blogs';
-import loginService from './services/login';
-import Blog from './components/Blog';
-import { NewBlogpostForm } from './components/NewBlogpostForm';
 import './assets/App.css';
 import { useQuery } from '@tanstack/react-query';
 import BlogContext from './BlogContext';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { Form, Button } from 'react-bootstrap'
-import { Notification } from './components/Notification';
 import { NavBar } from "./components/NavBar";
+import { Users } from './components/Users';
+import { Home } from './components/Home';
 
 const App = () => {
   const { state, dispatch } = useContext(BlogContext);
   const [hasDispatchedError, setHasDispatchedError] = useState(false);
   const token = blogService.getToken();
-  const blogpostFormRef = useRef();
 
   useEffect(() => {
     let loggedUser = window.localStorage.getItem('loggedBlogpostAppUser');
@@ -62,218 +58,6 @@ const App = () => {
     return <div>{state.errorMessage}</div>;
   }
 
-  const handleLogin = async (event, username, password) => {
-    event.preventDefault();
-    try {
-      const user = await loginService.login({
-        username,
-        password,
-      });
-      window.localStorage.setItem(
-        'loggedBlogpostAppUser',
-        JSON.stringify(user)
-      );
-      blogService.setToken(user.token);
-      dispatch({ type: 'SET_USER', payload: user });
-    } catch (exception) {
-      const message = exception.response.status === 401 ? "Wrong credentials!" : exception.message
-      dispatch({ type: 'SET_ERROR_MESSAGE', payload: message });
-      setTimeout(() => {
-        dispatch({ type: 'SET_ERROR_MESSAGE', payload: null });
-      }, 5000);
-    }
-  };
-
-  const loginForm = () => {
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-    return (
-      <>
-        <br />
-        <h4>Login to application</h4>
-        <Form onSubmit={handleLogin}>
-          <Form.Group>
-            <Form.Label>username:</Form.Label>
-            <Form.Control
-              type="text"
-              name="username"
-              value={username}
-              onChange={({ target }) => setUsername(target.value)}
-            />
-          </Form.Group>
-          <Form.Group>
-            <Form.Label>password:</Form.Label>
-            <Form.Control
-              type="password"
-              name="Password"
-              value={password}
-              onChange={({ target }) => setPassword(target.value)}
-            />
-          </Form.Group>
-
-          <Button className="top-bottom-margin-10px" type="submit" onClick={() => { handleLogin(event, username, password) }}>
-            login
-          </Button>
-        </Form>
-        {state.errorMessage && <Notification message={state.errorMessage} type="danger" />}
-      </>
-    )
-  }
-
-  const cleanup = () => {
-    document.getElementById('title').value = '';
-    document.getElementById('author').value = '';
-    document.getElementById('url').value = '';
-  };
-
-  const newBlogpostHandler = (event) => {
-    event.preventDefault();
-    const formData = new FormData(event.target);
-
-    const newBlogpostObject = {};
-
-    for (const [key, value] of formData.entries()) {
-      newBlogpostObject[key] = value;
-    }
-
-    blogService
-      .create(newBlogpostObject)
-      .then((response) => {
-        const newBlogpostsArray = [...blogs];
-        newBlogpostObject.id = response.data.id;
-        const loggedUser = JSON.parse(
-          window.localStorage.getItem('loggedBlogpostAppUser')
-        );
-        if (loggedUser) {
-          newBlogpostObject.user = {};
-          newBlogpostObject.user.username = loggedUser.username;
-          newBlogpostObject.user.name = loggedUser.name;
-          newBlogpostObject.user.id = loggedUser.id;
-        }
-        newBlogpostsArray.push(newBlogpostObject);
-        dispatch({ type: 'SET_SUCCESS_MESSAGE', payload: 'Blogpost created succesfully!' });
-        cleanup();
-        dispatch({ type: 'SET_BLOGS', payload: newBlogpostsArray });
-        blogpostFormRef.current.toggleVisibility();
-        setTimeout(() => {
-          dispatch({ type: 'SET_SUCCESS_MESSAGE', payload: null });
-        }, 5000);
-
-        // now gotta add the new blogpost locally
-        // by making a new object from what was returned
-      })
-      .catch((exception) => {
-        // setErrorMessage(
-        //   `Error creating blogpost: ${exception.response.data.error
-        //     ? exception.response.data.error
-        //     : exception.message
-        //   }`
-        // );
-        dispatch({
-          type: 'SET_ERROR_MESSAGE', payload: `Error creating blogpost: ${exception.response.data.error
-            ? exception.response.data.error
-            : exception.message
-            }`
-        });
-        setTimeout(() => {
-          dispatch({
-            type: 'SET_ERROR_MESSAGE', payload: null
-          });
-        }, 5000);
-      });
-  };
-
-  const updateThisBlogpost = (updatedBlogpost) => {
-    const desiredBlogIndex = state.blogs.findIndex(
-      (blog) => blog.id === updatedBlogpost.id
-    );
-    const newBlogpostsArray = [...blogs];
-    newBlogpostsArray[desiredBlogIndex] = updatedBlogpost;
-    dispatch({ type: 'SET_BLOGS', payload: newBlogpostsArray });
-  };
-
-  const removeThisBlogpost = (removedBlogpostId) => {
-    const updatedBlogposts = [...blogs];
-    const removedBpIndex = state.blogs.findIndex(
-      (blog) => blog.id === removedBlogpostId
-    );
-    updatedBlogposts.splice(removedBpIndex, 1);
-    dispatch({ type: 'SET_BLOGS', payload: updatedBlogposts });
-  };
-
-  const successMessageAlert = (message) => {
-    dispatch({ type: 'SET_SUCCESS_MESSAGE', payload: message });
-    setTimeout(() => {
-      dispatch({ type: 'SET_SUCCESS_MESSAGE', payload: null });
-    }, 5000);
-  };
-
-  const errorMessageAlert = (message) => {
-    dispatch({
-      type: 'SET_ERROR_MESSAGE', payload: message
-    });
-    setTimeout(() => {
-      dispatch({
-        type: 'SET_ERROR_MESSAGE', payload: null
-      });
-    }, 5000);
-  };
-
-  const increaseLikes = (blogObj) => {
-    blogService
-      .update(blogObj)
-      .then((response) => {
-        blogObj.likes = response.data.likes;
-        updateThisBlogpost(blogObj);
-      })
-      .catch((error) => {
-        errorMessageAlert(
-          error.response.data.error ? error.response.data.error : error.message
-        );
-        setTimeout(() => {
-          errorMessageAlert(null);
-        }, 5000);
-      });
-  };
-
-  function Home() {
-    if (state.user) {
-      const blogListData = BlogList();
-      return (
-        <>
-          <LoginData />
-          {blogListData}
-        </>
-      )
-    }
-    else return loginForm();
-  }
-
-
-  const BlogList = () => {
-    return (
-      <>
-        <Notification message={state.successMessage} type="success" />
-        <Notification message={state.errorMessage} type="error" />
-        <h2>blogs</h2>
-        {state.user.name} is logged in <button onClick={logOut}>log out</button>
-        <NewBlogpostForm createBlogpost={newBlogpostHandler} reference={blogpostFormRef} />
-        {state.blogs.map((blog) => {
-          return (
-            <Blog
-              key={blog.id}
-              blog={blog}
-              increaseLikes={increaseLikes}
-              updateThisBlogpost={updateThisBlogpost}
-              removeThisBlogpost={removeThisBlogpost}
-              errorMessageAlert={errorMessageAlert}
-              successMessageAlert={successMessageAlert}
-            />
-          );
-        })}
-      </>
-    );
-  };
   return (
     <div className="container">
       <NavBar />
@@ -290,28 +74,3 @@ const App = () => {
 
 
 export default App;
-
-const LoginData = () => {
-  const { state, dispatch } = useContext(BlogContext);
-  return (
-    <>
-      {state.user && state.user.name} is logged in <button onClick={logOut}>log out</button>
-    </>
-  );
-};
-
-const logOut = () => {
-  window.localStorage.removeItem('loggedBlogpostAppUser');
-  blogService.setToken(null);
-  location.reload();
-};
-
-
-function Users() {
-  return (
-    <>
-      <h2>Users</h2>
-      <LoginData />
-    </>
-  )
-}
