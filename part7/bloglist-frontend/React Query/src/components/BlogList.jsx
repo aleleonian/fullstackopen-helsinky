@@ -2,11 +2,11 @@ import { useContext, useRef } from 'react';
 import BlogContext from '../BlogContext';
 import { Notification } from './Notification';
 import { NewBlogpostForm } from './NewBlogpostForm';
-import loginService from '../services/login';
+import blogService from '../services/blogs';
 import Blog from './Blog';
 import { errorMessageAlert, successMessageAlert } from "../library/alerts";
 
-const newBlogpostHandler = (event) => {
+const newBlogpostHandler = (event, dispatch, state, blogpostFormRef) => {
     event.preventDefault();
     const formData = new FormData(event.target);
 
@@ -19,7 +19,7 @@ const newBlogpostHandler = (event) => {
     blogService
         .create(newBlogpostObject)
         .then((response) => {
-            const newBlogpostsArray = [...blogs];
+            const newBlogpostsArray = [...state.blogs];
             newBlogpostObject.id = response.data.id;
             const loggedUser = JSON.parse(
                 window.localStorage.getItem('loggedBlogpostAppUser')
@@ -92,13 +92,13 @@ const updateThisBlogpost = (updatedBlogpost) => {
     const desiredBlogIndex = state.blogs.findIndex(
         (blog) => blog.id === updatedBlogpost.id
     );
-    const newBlogpostsArray = [...blogs];
+    const newBlogpostsArray = [state.blogs];
     newBlogpostsArray[desiredBlogIndex] = updatedBlogpost;
     dispatch({ type: 'SET_BLOGS', payload: newBlogpostsArray });
 };
 
-const removeThisBlogpost = (removedBlogpostId) => {
-    const updatedBlogposts = [...blogs];
+const removeThisBlogpost = (removedBlogpostId, dispatch, state) => {
+    const updatedBlogposts = [state.blogs];
     const removedBpIndex = state.blogs.findIndex(
         (blog) => blog.id === removedBlogpostId
     );
@@ -115,8 +115,7 @@ export const BlogList = () => {
             <Notification message={state.successMessage} type="success" />
             <Notification message={state.errorMessage} type="error" />
             <h2>blogs</h2>
-            {state.user.name} is logged in <button onClick={loginService.logOut}>log out</button>
-            <NewBlogpostForm createBlogpost={newBlogpostHandler} reference={blogpostFormRef} />
+            <NewBlogpostForm createBlogpost={() => { newBlogpostHandler(event, dispatch, state, blogpostFormRef) }} reference={blogpostFormRef} />
             {state.blogs.map((blog) => {
                 return (
                     <Blog

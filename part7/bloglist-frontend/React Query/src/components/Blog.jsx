@@ -1,33 +1,37 @@
-import { useState } from 'react';
+import { useState, useContext} from 'react';
 import blogService from '../services/blogs';
+import BlogContext from '../BlogContext';
 
 const Blog = ({
   blog,
   increaseLikes,
+  updateThisBlogpost,
   removeThisBlogpost,
   errorMessageAlert,
   successMessageAlert,
 }) => {
   const [displayInfo, setDisplayInfo] = useState(false);
+  const { state, dispatch } = useContext(BlogContext);
 
   const toggleShowInfo = () => {
     setDisplayInfo(!displayInfo);
   };
 
-  const removeBlogPost = (blogpost) => {
+  const removeBlogPost = (blogpost, dispatch, successMessageAlert, errorMessageAlert) => {
     if (confirm(`Do you really want to delete blogpost "${blogpost.title}"`)) {
       blogService
         .remove(blogpost)
         .then((response) => {
-          removeThisBlogpost(blogpost.id);
-          successMessageAlert('Blogpost removed allright!');
+          removeThisBlogpost(blogpost.id, dispatch, state);
+          successMessageAlert('Blogpost removed allright!', dispatch);
         })
         .catch((error) => {
           errorMessageAlert(
-            error.response.data ? error.response.data.error : error.message
+            error.response.data ? error.response.data.error : error.message,
+            dispatch
           );
           setTimeout(() => {
-            errorMessageAlert(null);
+            errorMessageAlert(null, dispatch);
           }, 5000);
         });
     }
@@ -67,7 +71,7 @@ const Blog = ({
               <div>
                 <button
                   data-testid="remove-button"
-                  onClick={() => removeBlogPost(blog)}
+                  onClick={() => removeBlogPost(blog, dispatch, successMessageAlert, errorMessageAlert)}
                 >
                   remove
                 </button>

@@ -1,4 +1,6 @@
 import axios from 'axios';
+import blogService from '../services/blogs';
+
 const baseUrl = '/api/login';
 
 const login = async (credentials) => {
@@ -8,7 +10,7 @@ const login = async (credentials) => {
 
 const logOut = () => {
   window.localStorage.removeItem('loggedBlogpostAppUser');
-  setToken(null);
+  blogService.setToken(null);
   location.reload();
 };
 

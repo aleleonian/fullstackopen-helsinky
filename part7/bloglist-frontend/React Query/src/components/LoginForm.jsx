@@ -1,9 +1,11 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { Form, Button } from 'react-bootstrap';
-import { useContext } from 'react';
 import BlogContext from '../BlogContext';
+import loginService from '../services/login';
+import { Notification } from './Notification';
+import blogService from '../services/blogs';
 
-const handleLogin = async (event, username, password) => {
+const handleLogin = async (event, username, password, dispatch) => {
     event.preventDefault();
     try {
         const user = await loginService.login({
@@ -29,7 +31,7 @@ export const LoginForm = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const { state, dispatch } = useContext(BlogContext);
-    
+
     return (
         <>
             <br />
@@ -54,7 +56,7 @@ export const LoginForm = () => {
                     />
                 </Form.Group>
 
-                <Button className="top-bottom-margin-10px" type="submit" onClick={() => { handleLogin(event, username, password) }}>
+                <Button className="top-bottom-margin-10px" type="submit" onClick={() => { handleLogin(event, username, password, dispatch) }}>
                     login
                 </Button>
             </Form>

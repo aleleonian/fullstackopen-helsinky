@@ -8,11 +8,9 @@ export function Home() {
     const { state, dispatch } = useContext(BlogContext);
 
     if (state.user) {
-        const blogListData = BlogList();
         return (
             <>
-                <LoginData />
-                {blogListData}
+                <BlogList />
             </>
         )
     }
