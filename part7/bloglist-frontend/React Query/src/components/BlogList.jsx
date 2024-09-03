@@ -63,12 +63,12 @@ const newBlogpostHandler = (event, dispatch, state, blogpostFormRef) => {
         });
 };
 
-const increaseLikes = (blogObj) => {
+const increaseLikes = (blogObj, state, dispatch) => {
     blogService
         .update(blogObj)
         .then((response) => {
             blogObj.likes = response.data.likes;
-            updateThisBlogpost(blogObj);
+            updateThisBlogpost(blogObj, state, dispatch);
         })
         .catch((error) => {
             errorMessageAlert(
@@ -88,7 +88,7 @@ const cleanup = () => {
 };
 
 
-const updateThisBlogpost = (updatedBlogpost) => {
+const updateThisBlogpost = (updatedBlogpost, state, dispatch) => {
     const desiredBlogIndex = state.blogs.findIndex(
         (blog) => blog.id === updatedBlogpost.id
     );
@@ -122,7 +122,6 @@ export const BlogList = () => {
                         key={blog.id}
                         blog={blog}
                         increaseLikes={increaseLikes}
-                        updateThisBlogpost={updateThisBlogpost}
                         removeThisBlogpost={removeThisBlogpost}
                         errorMessageAlert={errorMessageAlert}
                         successMessageAlert={successMessageAlert}

@@ -1,6 +1,5 @@
 import { useContext } from 'react';
 import BlogContext from '../BlogContext';
-import { LoginData } from './LoginData';
 import { LoginForm } from "./LoginForm";
 import { BlogList } from './BlogList';
 

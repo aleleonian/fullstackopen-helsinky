@@ -1,5 +1,6 @@
 import axios from 'axios';
-import blogService from '../services/blogs';
+
+let token = null;
 
 const baseUrl = '/api/login';
 
@@ -10,8 +11,16 @@ const login = async (credentials) => {
 
 const logOut = () => {
   window.localStorage.removeItem('loggedBlogpostAppUser');
-  blogService.setToken(null);
+  setToken(null);
   location.reload();
 };
 
-export default { login, logOut };
+const setToken = (newToken) => {
+  token = `Bearer ${newToken}`;
+};
+
+const getToken = () => {
+  return token;
+};
+
+export default { login, logOut, setToken, getToken };

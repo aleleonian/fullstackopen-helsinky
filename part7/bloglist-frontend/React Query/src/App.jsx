@@ -1,5 +1,6 @@
 import { useState, useEffect, useContext } from 'react';
 import blogService from './services/blogs';
+import loginService from './services/login';
 import './assets/App.css';
 import { useQuery } from '@tanstack/react-query';
 import BlogContext from './BlogContext';
@@ -7,17 +8,20 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { NavBar } from "./components/NavBar";
 import { Users } from './components/Users';
 import { Home } from './components/Home';
+import { UserDetail } from "./components/UserDetail";
+import { BlogpostDetail } from "./components/BlogpostDetail";
+import { NotFound } from "./components/NotFound";
 
 const App = () => {
   const { state, dispatch } = useContext(BlogContext);
   const [hasDispatchedError, setHasDispatchedError] = useState(false);
-  const token = blogService.getToken();
+  const token = loginService.getToken();
 
   useEffect(() => {
     let loggedUser = window.localStorage.getItem('loggedBlogpostAppUser');
     if (loggedUser) {
       loggedUser = JSON.parse(loggedUser);
-      blogService.setToken(loggedUser.token);
+      loginService.setToken(loggedUser.token);
       dispatch({ type: 'SET_USER', payload: loggedUser });
     }
   }, []);
@@ -26,7 +30,7 @@ const App = () => {
     queryKey: ['blogs'],
     queryFn: async () => {
 
-      const token = blogService.getToken();
+      const token = loginService.getToken();
 
       if (!token) {
         throw new Error('User not logged in');
@@ -63,8 +67,11 @@ const App = () => {
       <NavBar />
       <BrowserRouter>
         <Routes>
-          <Route path="users" element={<Users />} />
           <Route path="/" element={<Home />} />
+          <Route path="users" element={<Users />} />
+          <Route path="/users/:id" element={<UserDetail />} />
+          <Route path="/blogs/:id" element={<BlogpostDetail />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
     </div>

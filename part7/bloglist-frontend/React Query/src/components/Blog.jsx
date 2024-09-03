@@ -5,7 +5,6 @@ import BlogContext from '../BlogContext';
 const Blog = ({
   blog,
   increaseLikes,
-  updateThisBlogpost,
   removeThisBlogpost,
   errorMessageAlert,
   successMessageAlert,
@@ -60,7 +59,7 @@ const Blog = ({
             {blog.likes}{' '}
             <button
               data-testid="like-button"
-              onClick={() => increaseLikes(blog)}
+              onClick={() => increaseLikes(blog, state, dispatch)}
             >
               like
             </button>

@@ -1,9 +1,8 @@
 import { useState, useContext } from 'react';
 import { Form, Button } from 'react-bootstrap';
 import BlogContext from '../BlogContext';
-import loginService from '../services/login';
 import { Notification } from './Notification';
-import blogService from '../services/blogs';
+import loginService from '../services/login';
 
 const handleLogin = async (event, username, password, dispatch) => {
     event.preventDefault();
@@ -16,7 +15,7 @@ const handleLogin = async (event, username, password, dispatch) => {
             'loggedBlogpostAppUser',
             JSON.stringify(user)
         );
-        blogService.setToken(user.token);
+        loginService.setToken(user.token);
         dispatch({ type: 'SET_USER', payload: user });
     } catch (exception) {
         const message = exception.response.status === 401 ? "Wrong credentials!" : exception.message
