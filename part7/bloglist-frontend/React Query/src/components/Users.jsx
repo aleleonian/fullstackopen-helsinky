@@ -1,33 +1,20 @@
 import React, { useState, useContext, useEffect } from 'react';
 import BlogContext from '../BlogContext';
-import { useNavigate } from 'react-router-dom';
 import usersService from '../services/users';
 import UsersTable from './UsersTable';
+import { useAuthCheck } from '../hooks/useAuthCheck';
 
 export function Users() {
     const { state, dispatch } = useContext(BlogContext);
-    const navigate = useNavigate();
     const [users, setUsers] = useState([]);
 
-    useEffect(() => {
-        if (state.user === null) {
-            const loggedUserJSON = window.localStorage.getItem('loggedBlogpostAppUser');
-            if (loggedUserJSON) {
-                const user = JSON.parse(loggedUserJSON);
-                dispatch({ type: 'SET_USER', payload: user });
-
-            } else {
-                navigate('/');
-            }
-        }
-    }, [state.user, navigate, dispatch]);
+    useAuthCheck();
 
     useEffect(() => {
         if (state.user) {
             usersService
                 .getAll()
                 .then((users) => {
-                    console.log("users->", users)
                     setUsers(users);;
                 })
                 .catch((error) => {

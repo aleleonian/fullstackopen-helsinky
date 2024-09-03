@@ -15,7 +15,6 @@ const handleLogin = async (event, username, password, dispatch) => {
             'loggedBlogpostAppUser',
             JSON.stringify(user)
         );
-        loginService.setToken(user.token);
         dispatch({ type: 'SET_USER', payload: user });
     } catch (exception) {
         const message = exception.response.status === 401 ? "Wrong credentials!" : exception.message

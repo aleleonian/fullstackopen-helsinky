@@ -6,6 +6,7 @@ const baseUrl = '/api/login';
 
 const login = async (credentials) => {
   const response = await axios.post(baseUrl, credentials);
+  setToken(response.data.token);
   return response.data;
 };
 

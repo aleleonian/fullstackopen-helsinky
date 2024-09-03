@@ -16,7 +16,6 @@ const getById = async (userId) => {
     const config = {
         headers: { Authorization: loginService.getToken() },
       };
-
     const response = await axios.get(baseUrl + `/${userId}`, config);
     return response.data;
 };
