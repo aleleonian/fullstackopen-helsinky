@@ -1,34 +1,40 @@
-import { useState } from "react";
-import Authors from "./components/Authors";
-import Books from "./components/Books";
-import NewBook from "./components/NewBook";
-import { useQuery } from '@apollo/client';
+import { gql, useQuery } from '@apollo/client'
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Authors from './components/Authors';
 
-import { ALL_AUTHORS, ALL_BOOKS } from './queries.js';
+const ALL_AUTHORS = gql`
+  query {
+    allAuthors {
+      name
+      born
+      bookCount
+    }
+  }
+  `
 
 const App = () => {
-  const [page, setPage] = useState("authors");
+  const result = useQuery(ALL_AUTHORS)
 
-  const allAuthorsResult = useQuery(ALL_AUTHORS);
-  const allBooksResult = useQuery(ALL_BOOKS);
-  
+  if (result.loading) {
+    return <div>loading...</div>
+  }
 
+  return (
+    <div className="container">
+      <BrowserRouter>
+        <Routes>
+          <Route path="authors" element={<Authors />} />
+          <Route path="/" element={<Home />} />
+        </Routes>
+      </BrowserRouter>
+    </div>
+  );
 
   return (
     <div>
-      <div>
-        <button onClick={() => setPage("authors")}>authors</button>
-        <button onClick={() => setPage("books")}>books</button>
-        <button onClick={() => setPage("add")}>add book</button>
-      </div>
-
-      <Authors queryData={allAuthorsResult} show={page === "authors"} />
-
-      <Books queryData={allBooksResult} show={page === "books"} />
-
-      <NewBook show={page === "add"} />
+      {result.data.allAuthors.map(p => p.name).join(', ')}
     </div>
-  );
-};
+  )
+}
 
-export default App;
+export default App
