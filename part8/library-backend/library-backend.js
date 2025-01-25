@@ -75,10 +75,10 @@ const typeDefs = `
     favoriteGenre: String!
   ): User
 
-    login(
-        username: String!
-        password: String!
-    ): Token
+login(
+    username: String!
+    password: String!
+): Token
 }
 `
 const resolvers = {
@@ -93,11 +93,16 @@ const resolvers = {
             return await Author.find({})
         },
         allBooks: async (root, args) => {
+            console.log("querying allBooks!");
             const bookList = await Book.find({});
-            if (!args.author && !args.genre) return bookList;
+            if (!args.author && !args.genre) {
+                console.log("No args.author or args.genre");
+                return bookList;
+            }
             let filteredBooks = [...bookList];
             if (args.author) filteredBooks = filteredBooks.filter(book => book.author === args.author);
             if (args.genre) filteredBooks = filteredBooks.filter(book => book.genres.includes(args.genre));
+            return filteredBooks;
         },
         me: (root, args, context) => {
             return context.currentUser
